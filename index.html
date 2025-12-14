@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>🌟 Tres Meses: Nuestro Puente de Luz 🌟</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #0d1117; /* Fondo oscuro */
+            color: #c9d1d9;
+            text-align: center;
+        }
+        h1 {
+            color: #58a6ff; /* Azul brillante para el título */
+            padding-top: 20px;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+        }
+        model-viewer {
+            width: 100%;
+            height: 70vh; /* Ocupa 70% de la altura de la vista */
+            margin: 20px 0;
+            --poster-color: #0d1117; /* Color de fondo mientras carga */
+        }
+        /* Estilo básico de los hotspots/mensajes */
+        .hotspot-box {
+            background: rgba(88, 166, 255, 0.85); /* Aurora Azul/Verde */
+            color: #0d1117;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            display: none; /* Inicialmente oculto */
+            pointer-events: none; /* No interfiere con la rotación del modelo */
+            transform: translate(20px, -20px); /* Pequeño desplazamiento */
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        .visible {
+            display: block !important;
+            opacity: 1 !important;
+        }
+        p.message {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #ffffff;
+        }
+    </style>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🌌 Tres Meses de Amor Iluminando la Distancia 🌍</h1>
+        <p class="message">¡Gira la Tierra y acércate al mágico puente de luz que conecta a Cali y Santa Cruz! (¡No olvides hacer zoom!)</p>
+
+        <model-viewer 
+            id="earth-model"
+            src="ruta/a/tu/modelo.glb" 
+            alt="Modelo 3D de la Tierra de Noche"
+            shadow-intensity="1"
+            camera-controls
+            auto-rotate 
+            rotation-per-second="10deg"
+            ar>
+
+            <div slot="hotspot-cali" class="hotspot-box" data-message="¡Aquí te conocí, mi amor! (El mejor 3er mes de todos)">
+                🇨🇴 CALI
+            </div>
+
+            <div slot="hotspot-santacruz" class="hotspot-box" data-message="Estás allá, pero la luz del amor nos une. (Cada día es un nuevo 3er mes)">
+                🇧🇴 SANTA CRUZ
+            </div>
+
+            <div slot="hotspot-center" class="hotspot-box" data-message="Desde aquí se ve el mes 3 de nuestro increíble viaje.">
+                ✨ PUENTE DE LUZ
+            </div>
+            
+        </model-viewer>
+    </div>
+
+    <script>
+        const modelViewer = document.getElementById('earth-model');
+        const zoomThreshold = 3.5; // Ajusta este valor: menor = más sensible al zoom
+
+        // Función para verificar la distancia de la cámara y mostrar/ocultar hotspots
+        function updateHotspotVisibility() {
+            // Obtenemos la distancia actual de la cámara al centro del modelo
+            const cameraDistance = modelViewer.getCameraOrbit().match(/(\d+\.?\d*)\s*m/)[1];
+            
+            const hotspots = modelViewer.querySelectorAll('.hotspot-box');
+
+            if (parseFloat(cameraDistance) < zoomThreshold) {
+                // Si la cámara está cerca (hizo zoom)
+                hotspots.forEach(hotspot => {
+                    hotspot.classList.add('visible');
+                    // Opcional: reemplazar el texto del hotspot con el mensaje completo
+                    hotspot.textContent = hotspot.getAttribute('data-message');
+                });
+            } else {
+                // Si la cámara está lejos
+                hotspots.forEach(hotspot => {
+                    hotspot.classList.remove('visible');
+                    // Restaurar texto corto si deseas (o solo dejar el display:none)
+                });
+            }
+        }
+
+        // Llamamos a la función cuando el modelo se carga y cada vez que la cámara se mueve (zoom/rotación)
+        modelViewer.addEventListener('load', () => {
+            // Establecer las coordenadas de los hotspots DESPUÉS de que el modelo cargue
+            modelViewer.updateHotspot({
+                slot: 'hotspot-cali', 
+                position: '-0.38m 0.8m 0.42m' // Coordenadas aproximadas para Cali, ajusta al modelo
+            });
+            modelViewer.updateHotspot({
+                slot: 'hotspot-santacruz', 
+                position: '-0.2m 0.85m 0.49m' // Coordenadas aproximadas para Santa Cruz, ajusta al modelo
+            });
+             modelViewer.updateHotspot({
+                slot: 'hotspot-center', 
+                position: '-0.3m 0.82m 0.45m' // Punto intermedio para el "puente"
+            });
+
+            // Llamamos a la función de visibilidad cada vez que la cámara cambia (zoom o rotación)
+            modelViewer.addEventListener('camera-change', updateHotspotVisibility);
+        });
+
+    </script>
+</body>
+</html>

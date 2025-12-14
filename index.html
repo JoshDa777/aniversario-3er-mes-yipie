@@ -44,7 +44,7 @@
             
             /* Propiedades para la animación */
             display: block; 
-            opacity: 0; /* Inicialmente transparente */
+            opacity: 0; 
             visibility: hidden; 
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
             pointer-events: none; 
@@ -68,7 +68,7 @@
 <body>
     <div class="container">
         <h1>🌌 Tres Meses de Amor Iluminando la Distancia 🌍</h1>
-        <p class="message">¡Gira la Tierra y acércate al mágico puente de luz que conecta a Cali y Santa Cruz! (¡El zoom revela la magia!)</p>
+        <p class="message">¡Gira la Tierra y acércate al mágico puente de luz que conecta a Cali y Santa Cruz! **(¡El zoom revela la magia!)**</p>
 
         <model-viewer 
             id="earth-model"
@@ -89,6 +89,13 @@
 
             <div slot="hotspot-center" class="hotspot-box" data-message="✨ Nuestra Aurora Boreal: Este puente de luz representa cada uno de nuestros 92 días. Te amo.">
                 Puente de Luz
+            </div>
+            
+            <div slot="hotspot-luz1" class="hotspot-box" data-message="⭐ Cada día te extraño más, lo prometo.">
+                *
+            </div>
+            <div slot="hotspot-luz2" class="hotspot-box" data-message="⭐ ¿Lista para el próximo trimestre?">
+                *
             </div>
             
         </model-viewer>
@@ -119,13 +126,15 @@
                 // Si la cámara está lejos, oculta y restaura el texto corto
                 hotspots.forEach(hotspot => {
                     hotspot.classList.remove('visible');
-                    // Restaura el texto corto inicial (ej: "Cali", "Santa Cruz")
+                    // Restaura el texto corto inicial 
                     if (hotspot.slot === 'hotspot-cali') {
                         hotspot.textContent = 'Cali';
                     } else if (hotspot.slot === 'hotspot-santacruz') {
                         hotspot.textContent = 'Santa Cruz';
                     } else if (hotspot.slot === 'hotspot-center') {
                          hotspot.textContent = 'Puente de Luz';
+                    } else {
+                         hotspot.textContent = '*'; // Para los puntos de luz intermedios
                     }
                 });
             }
@@ -134,20 +143,29 @@
         // Ejecución principal
         modelViewer.addEventListener('load', () => {
             
-            // --- Paso CRÍTICO: Configuración de las coordenadas geográficas ---
-            // ¡Estos valores son para AFINAR! Gira el modelo y ajusta X, Y, Z.
+            // --- ¡PUNTOS CRÍTICOS PARA MODIFICAR! ---
+            // Los 5 puntos a continuación deben ser ajustados (X, Y, Z)
+            // hasta que formen la línea que conecta Cali y Santa Cruz.
             
             modelViewer.updateHotspot({
                 slot: 'hotspot-cali', 
-                position: '-0.38m 0.8m 0.42m' // Coordenadas aproximadas para Cali, Colombia
+                position: '0.04m 0.99m -0.06m' // MODIFICA ESTOS NÚMEROS
             });
             modelViewer.updateHotspot({
                 slot: 'hotspot-santacruz', 
-                position: '-0.2m 0.85m 0.49m' // Coordenadas aproximadas para Santa Cruz, Bolivia
+                position: '0.04m 0.95m 0.29m' // MODIFICA ESTOS NÚMEROS
             });
-             modelViewer.updateHotspot({
+            modelViewer.updateHotspot({
                 slot: 'hotspot-center', 
-                position: '-0.3m 0.82m 0.45m' // Punto intermedio del "Puente"
+                position: '0.04m 0.97m 0.11m' // MODIFICA ESTOS NÚMEROS
+            });
+            modelViewer.updateHotspot({
+                slot: 'hotspot-luz1', 
+                position: '0.04m 0.98m 0.04m' // MODIFICA ESTOS NÚMEROS
+            });
+            modelViewer.updateHotspot({
+                slot: 'hotspot-luz2', 
+                position: '0.04m 0.96m 0.20m' // MODIFICA ESTOS NÚMEROS
             });
 
             // Llama a la función de visibilidad cada vez que la cámara cambia (zoom o rotación)

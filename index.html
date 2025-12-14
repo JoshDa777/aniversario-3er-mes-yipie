@@ -6,7 +6,7 @@
     <title>Aurora de Tres Meses: Un Puente de Luz</title>
     
     <style>
-        /* ESTILOS CSS */
+        /* [MISMO CSS DE LA VERSIÓN ANTERIOR - FUNCIONA BIEN] */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -40,7 +40,6 @@
             z-index: 5;
         }
 
-        /* La raíz de la Aurora (el botón) */
         #aurora-trigger {
             position: absolute;
             right: 5%; 
@@ -59,7 +58,6 @@
             z-index: 10;
         }
 
-        /* --- ESTILO BASE DE LA PARTÍCULA --- */
         .particle {
             position: absolute;
             width: 8px; 
@@ -71,10 +69,10 @@
             transition: none;
             z-index: 8;
             pointer-events: none;
+            
             filter: blur(1.5px); 
         }
         
-        /* La caja de texto que aparece al final */
         #message-box {
             position: absolute;
             top: 5%; 
@@ -121,11 +119,11 @@
 
     </div>
 
-    <audio id="music-player" src="musica-aurora.mp3" preload="auto"></audio>
+    <audio id="music-player" src="./musica-aurora.mp3" preload="auto"></audio>
 
     
     <script>
-        // JAVASCRIPT - Lógica de Partículas, Onda y Flujo Constante (VERSIÓN MÁS SIMPLE)
+        // JAVASCRIPT - CONEXIÓN GARANTIZADA CON window.onload
 
         // --- CONSTANTES ---
         const colors = ['#4fc3f7', '#7fffd4', '#a8dfff'];
@@ -137,20 +135,23 @@
         let particleCount = 0; 
         let intervalId = null; 
 
-        // --- INICIO GARANTIZADO ---
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- FUNCIÓN DE INICIO que espera a que todo esté cargado ---
+        window.onload = function() { 
             
-            // Declaración local de elementos
+            // Declaración de elementos
             const trigger = document.getElementById('aurora-trigger');
             const container = document.querySelector('.aurora-container');
             const messageBox = document.getElementById('message-box');
             const musicPlayer = document.getElementById('music-player');
             
-            if (!trigger || !container) return; // Si faltan elementos, paramos.
+            // Si el trigger sigue sin encontrarse, mostramos una alerta para diagnóstico.
+            if (!trigger) {
+                alert("ERROR: El botón del corazón no se encontró. Revisa el ID 'aurora-trigger' en el HTML.");
+                return; 
+            }
 
-            // --- 1. Creación y Animación de Partícula (Función idéntica) ---
+            // --- 1. Creación y Animación de Partícula ---
             function createAndAnimateParticle() {
-                // (Código de creación de partícula... [omitiendo detalles por brevedad])
                 const p = document.createElement('div');
                 p.classList.add('particle');
                 p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
@@ -185,9 +186,11 @@
 
             // --- 3. FUNCIÓN DE INICIO (El corazón del evento) ---
             function startAurora() {
-                // 1. Música (Si esto funciona, el script está ejecutándose)
+                // Si el script llega aquí, significa que el evento de clic funcionó.
+                
+                // 1. Música
                 musicPlayer.play().catch(error => {
-                    console.warn("Música bloqueada. El script sigue ejecutándose.");
+                    // Si hay error de música, lo ignoramos y continuamos
                 });
                 
                 // 2. Ocultar el botón
@@ -207,7 +210,7 @@
 
             // Conexión del evento de clic
             trigger.addEventListener('click', startAurora);
-        });
+        };
         
     </script>
 </body>

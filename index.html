@@ -31,7 +31,7 @@
         /* --- CONTENEDORES --- */
         .aurora-container {
             position: relative;
-            width: 100vw; /* Ocupa todo el ancho */
+            width: 100vw; 
             height: 90vh; 
             display: flex;
             justify-content: center;
@@ -41,12 +41,11 @@
             z-index: 5;
         }
 
-        /* La raíz de la Aurora (el botón que se presiona) */
+        /* La raíz de la Aurora (el botón) */
         #aurora-trigger {
-            /* POSICIONAMIENTO DEL TRIGGER */
             position: absolute;
-            right: 5%; /* Colocamos el trigger a la derecha */
-            bottom: 40%; /* A mitad de altura */
+            right: 5%; 
+            bottom: 40%; 
             
             background-color: #4fc3f7; 
             width: 50px;
@@ -64,15 +63,18 @@
         /* --- ESTILO BASE DE LA PARTÍCULA --- */
         .particle {
             position: absolute;
-            width: 5px;
-            height: 5px;
+            width: 6px; /* Ligeramente más grande */
+            height: 6px;
             border-radius: 50%;
             opacity: 0;
-            right: 5%; /* Todas nacen cerca del trigger */
+            right: 5%; 
             bottom: 40%;
-            transition: none; /* No queremos transiciones CSS aquí, usamos JS para el movimiento */
+            transition: none;
             z-index: 8;
             pointer-events: none;
+            
+            /* APLICACIÓN DE DIFUMINADO (BLUR) */
+            filter: blur(1px); 
         }
         
         /* La caja de texto que aparece al final */
@@ -87,7 +89,7 @@
             border-radius: 10px;
             text-align: center;
             opacity: 0; 
-            transition: opacity 1s ease 4s; 
+            transition: opacity 1s ease 6s; /* Aparece un poco más tarde */
             z-index: 20;
             width: 80%;
             max-width: 400px;
@@ -127,7 +129,7 @@
 
     
     <script>
-        // JAVASCRIPT - Lógica de Partículas, Onda y Animación
+        // JAVASCRIPT - Lógica de Partículas, Onda y Flujo Constante
 
         const trigger = document.getElementById('aurora-trigger');
         const container = document.querySelector('.aurora-container');
@@ -135,63 +137,65 @@
         const musicPlayer = document.getElementById('music-player');
         
         const colors = ['#4fc3f7', '#7fffd4', '#a8dfff']; // Azul, Aqua, Blanco Azulado
-        const NUM_PARTICLES = 1500; // Número de puntos que queremos generar
-        const DURATION = 5000; // Duración de la animación en milisegundos (5 segundos)
-
-        let particles = [];
         
-        // --- 1. Generación de las Partículas (Puntos) ---
-        function createParticles() {
-            for (let i = 0; i < NUM_PARTICLES; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                p.style.boxShadow = `0 0 5px ${p.style.backgroundColor}`;
-                
-                // Distribución inicial aleatoria cerca del origen (derecha)
-                const initialRight = 5 + (Math.random() * 5); // 5% a 10% del borde derecho
-                const initialBottom = 40 + (Math.random() * 5) - 2.5; // Cerca del 40% de altura
-                
-                p.style.right = `${initialRight}%`;
-                p.style.bottom = `${initialBottom}%`;
-                p.style.transition = `transform ${DURATION}ms linear, opacity 1s linear`;
-                
-                container.appendChild(p);
-                particles.push(p);
+        // --- CONSTANTES CRÍTICAS PARA EL EFECTO ---
+        const NUM_PARTICLES_PER_WAVE = 12; // Partículas que se generan por pulso (aumentado)
+        const LIFESPAN = 7000; // 7 segundos: más tiempo para ver la onda
+        const GENERATION_INTERVAL = 100; // Generar una nueva 'onda' cada 100ms (10 veces por segundo)
+        const WAVE_AMPLITUDE = 20; // Amplitud vertical de la onda (±20% de altura)
+        
+        let particleCount = 0; // Contador global para la función sinusoidal
+        let intervalId = null; // Para controlar el bucle continuo
+
+        // --- 1. Generación y Animación de una sola Partícula ---
+        function createAndAnimateParticle() {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            p.style.boxShadow = `0 0 7px ${p.style.backgroundColor}`;
+            
+            // Posición inicial aleatoria cerca del origen (derecha)
+            const initialRight = 5 + (Math.random() * 5); 
+            const initialBottom = 40 + (Math.random() * 5) - 2.5; 
+            
+            p.style.right = `${initialRight}%`;
+            p.style.bottom = `${initialBottom}%`;
+            
+            // Configuramos la transición CSS para el movimiento y desvanecimiento
+            p.style.transition = `transform ${LIFESPAN}ms linear, opacity 1s linear ${LIFESPAN - 1000}ms`;
+
+            container.appendChild(p);
+
+            // Calculamos la posición final
+            const finalLeft = 105 + (Math.random() * 5); // Sale ligeramente de la izquierda
+            
+            // LA ONDA: Usamos Math.sin para la trayectoria curva
+            // El ángulo cambia constantemente con el contador, asegurando el patrón de onda.
+            const sineWave = Math.sin(particleCount * 0.15) * WAVE_AMPLITUDE; 
+            const finalY = 40 + sineWave + (Math.random() * 5) - 2.5; // Altura final con onda y jitter
+
+            // Aplicamos el movimiento (Horizontal y Vertical basado en la onda)
+            p.style.transform = `translate(-${finalLeft}vw, ${finalY - 40}vh)`;
+            
+            // Desvanecer al final de la vida
+            p.style.opacity = 0;
+
+            // Limpiar el elemento del DOM una vez que haya terminado su vida
+            setTimeout(() => {
+                p.remove();
+            }, LIFESPAN + 1000); 
+
+            particleCount++;
+        }
+        
+        // --- 2. Función de Flujo Constante ---
+        function generateWave() {
+            // Crea un grupo de partículas para simular una 'onda'
+            for (let i = 0; i < NUM_PARTICLES_PER_WAVE; i++) {
+                createAndAnimateParticle();
             }
         }
 
-        // --- 2. Animación de la Onda (El movimiento curvo de los puntos) ---
-        function animateAurora() {
-            particles.forEach((p, i) => {
-                // Pequeño retardo para que no salgan todas al mismo tiempo
-                const delay = Math.random() * DURATION * 0.5; 
-
-                setTimeout(() => {
-                    p.style.opacity = 1; // Hacer visible
-                    
-                    // Calculamos la posición final (el final de la onda, a la izquierda)
-                    const finalLeft = 90 + (Math.random() * 5); // Llega al 90% del borde IZQUIERDO
-                    
-                    // Simulación de la ONDA: variación de la altura Y (vertical)
-                    // Usamos Math.sin para darle una trayectoria curva (ondulada)
-                    // i / NUM_PARTICLES da un valor entre 0 y 1 para cada partícula en el tiempo
-                    const sineWave = Math.sin(i * 0.1) * 15; // Onda vertical de ±15% de la altura
-                    
-                    const finalY = 40 + sineWave + (Math.random() * 10) - 5; // Altura final con onda
-                    
-                    // Usamos translate para la animación fluida
-                    p.style.transform = `translate(-${finalLeft}vw, ${finalY - 40}vh)`;
-                    
-                    // Las partículas se desvanecen al llegar al final
-                    setTimeout(() => {
-                        p.style.opacity = 0;
-                    }, DURATION - 1000); 
-
-                }, delay);
-            });
-        }
-        
         // --- 3. Control de Flujo Principal ---
         function startAurora() {
             // 1. Iniciar la Música
@@ -202,14 +206,16 @@
             // 2. Ocultar el botón de la raíz
             trigger.style.display = 'none';
 
-            // 3. Crear y Animación de Partículas
-            createParticles();
-            animateAurora();
+            // 3. Iniciar el Flujo Constante de Partículas
+            // Llama a generateWave cada GENERATION_INTERVAL (100ms)
+            intervalId = setInterval(generateWave, GENERATION_INTERVAL);
             
-            // 4. Mostrar el mensaje (Después de que la onda haya barrido la pantalla)
+            // 4. Mostrar el mensaje (Después de que la Aurora haya estado activa por un tiempo)
             setTimeout(() => {
                 messageBox.style.opacity = 1;
-            }, DURATION + 500); // 5.5 segundos (5s de duración + 0.5s extra)
+                // Opcional: Detener la generación de nuevas partículas después de mostrar el mensaje
+                // clearInterval(intervalId); 
+            }, 6000); // 6 segundos de animación antes de que aparezca el mensaje
 
             // 5. Limpiar y evitar doble clic
             trigger.removeEventListener('click', startAurora);

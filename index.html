@@ -3,175 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌟 Tres Meses: Nuestro Puente de Luz 🌌</title>
-
+    <title>Aurora de Tres Meses</title>
+    
     <style>
         /* ESTILOS CSS */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #0d1117; /* Fondo oscuro espacial */
-            color: #c9d1d9;
-            text-align: center;
-            overflow: hidden; 
-        }
-        h1 {
-            color: #58a6ff; 
-            padding-top: 20px;
-            font-size: 2.5em;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); 
-        }
-        .container {
-            width: 95%;
-            margin: 0 auto;
-        }
-        model-viewer {
-            width: 100%;
-            height: 80vh; 
-            margin: 10px 0;
-            --poster-color: #0d1117; 
-        }
-        /* Estilo de los Hotspots (los mensajes) */
-        .hotspot-box {
-            background: rgba(127, 255, 212, 0.9); /* Aqua/Verde-Aurora brillante */
-            color: #0d1117;
-            padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(127, 255, 212, 0.7);
-            border: 2px solid white;
-            
-            /* Propiedades para la animación */
-            display: block; 
-            opacity: 0; 
-            visibility: hidden; 
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-            pointer-events: none; 
-            transform: translate(20px, -20px); 
-        }
-        /* Clase para hacer visible el hotspot al hacer zoom */
-        .visible {
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-        p.message {
-            margin-top: 10px;
-            font-size: 1.1em;
+            background-color: #05051a; /* Azul muy oscuro, casi negro (noche) */
             color: #ffffff;
+            overflow: hidden; /* Oculta barras de desplazamiento */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
         }
-    </style>
 
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        /* Contenedor principal para centrar la Aurora */
+        .aurora-container {
+            position: relative;
+            width: 80vw;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* La aurora nace desde abajo */
+            overflow: hidden;
+            margin-top: 5vh;
+        }
+
+        /* La raíz de la Aurora (el botón inicial) */
+        #aurora-trigger {
+            background-color: #2196f3; /* Azul inicial */
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px #2196f3;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #aurora-trigger:hover {
+            box-shadow: 0 0 30px #4fc3f7;
+            transform: scale(1.1);
+        }
+        #aurora-trigger span {
+            font-size: 2em;
+            color: white;
+            animation: pulse 1s infinite alternate; /* Animación de pulsación */
+        }
+        
+        /* El elemento que se expande para simular la Aurora */
+        #aurora-effect {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px; /* Inicial: tamaño del trigger */
+            height: 0px; /* Inicial: altura cero */
+            background: linear-gradient(to top, 
+                rgba(127, 255, 212, 0.8), /* Aqua brillante */
+                rgba(88, 166, 255, 0.5), /* Azul neón */
+                transparent 100%);
+            transition: height 5s ease-out, width 5s ease-out; /* Animación de expansión */
+            box-shadow: 0 0 50px rgba(127, 255, 212, 0.9);
+            border-radius: 50px 50px 0 0; /* Bordes redondeados */
+        }
+
+        /* Mensaje del Tercer Mes (Oculto inicialmente) */
+        #message-box {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #7fffd4;
+            border-radius: 10px;
+            text-align: center;
+            opacity: 0; /* Oculto */
+            transition: opacity 1s ease 4s; /* Aparece al final de la animación */
+            z-index: 20;
+            width: 80%;
+            max-width: 400px;
+        }
+        #message-box h2 {
+            color: #7fffd4;
+        }
+
+        /* Animación de pulsación para el trigger */
+        @keyframes pulse {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+        
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>🌌 Tres Meses de Amor Iluminando la Distancia 🌍</h1>
-        <p class="message">¡Gira la Tierra y acércate al mágico puente de luz que conecta a Cali y Santa Cruz! **(¡El zoom revela la magia!)**</p>
 
-        <model-viewer 
-            id="earth-model"
-            src="tierra-noche.glb"  alt="Modelo 3D de la Tierra de Noche"
-            shadow-intensity="1"
-            camera-controls
-            auto-rotate 
-            rotation-per-second="10deg"
-            ar>
+    <h1>⭐ Presiona la Raíz de la Aurora ⭐</h1>
+    
+    <div class="aurora-container">
+        
+        <div id="aurora-effect"></div>
 
-            <div slot="hotspot-cali" class="hotspot-box" data-message="🇨🇴 CALI: El lugar donde todo comenzó. ¡Tú y yo, hace tres meses!">
-                Cali
-            </div>
+        <div id="aurora-trigger">
+            <span>❤️</span>
+        </div>
 
-            <div slot="hotspot-santacruz" class="hotspot-box" data-message="🇧🇴 SANTA CRUZ: Mi corazón viaja hasta ti todos los días. ¡Feliz Tercer Mes!">
-                Santa Cruz
-            </div>
+        <div id="message-box">
+            <h2>¡Felices 3 Meses!</h2>
+            <p>Esta aurora es el puente de luz que nos une desde Cali hasta Santa Cruz. Cada día que pasa es un reflejo del brillo que has traído a mi vida en este increíble tercer mes.</p>
+            <p>Te amo y espero verte pronto. ¡Gracias por estos 92 días!</p>
+        </div>
 
-            <div slot="hotspot-center" class="hotspot-box" data-message="✨ Nuestra Aurora Boreal: Este puente de luz representa cada uno de nuestros 92 días. Te amo.">
-                Puente de Luz
-            </div>
-            
-            <div slot="hotspot-luz1" class="hotspot-box" data-message="⭐ Cada día te extraño más, lo prometo.">
-                *
-            </div>
-            <div slot="hotspot-luz2" class="hotspot-box" data-message="⭐ ¿Lista para el próximo trimestre?">
-                *
-            </div>
-            
-        </model-viewer>
     </div>
 
+    <audio id="music-player" src="musica-aurora.mp3" preload="auto"></audio>
+
+    
     <script>
-        const modelViewer = document.getElementById('earth-model');
-        const zoomThreshold = 3.5; // Distancia de la cámara para activar los mensajes
+        // JAVASCRIPT: Lógica de la interacción y la animación
 
-        // Función que revisa si la cámara está cerca del modelo
-        function updateHotspotVisibility() {
-            const cameraOrbit = modelViewer.getCameraOrbit();
-            if (!cameraOrbit) return;
+        const trigger = document.getElementById('aurora-trigger');
+        const aurora = document.getElementById('aurora-effect');
+        const messageBox = document.getElementById('message-box');
+        const musicPlayer = document.getElementById('music-player');
+        
+        // La función que se ejecuta al hacer clic
+        function startAurora() {
+            // 1. Iniciar la Música
+            musicPlayer.play().catch(error => {
+                console.error("No se pudo iniciar la música automáticamente. Requiere interacción previa.", error);
+                // NOTA: Los navegadores modernos a veces bloquean 'play()' sin interacción, pero al hacer clic, debería funcionar.
+            });
+            
+            // 2. Expandir la Aurora (Animación con CSS Transition)
+            // Se le da un tamaño grande para que se vea el efecto de expansión
+            aurora.style.width = '700px'; 
+            aurora.style.height = '100%'; 
+            
+            // 3. Ocultar el botón de la raíz
+            trigger.style.display = 'none';
 
-            const match = cameraOrbit.match(/(\d+\.?\d*)\s*m/); 
-            if (!match) return;
+            // 4. Mostrar el mensaje después de que la expansión haya ocurrido (5 segundos)
+            setTimeout(() => {
+                messageBox.style.opacity = 1;
+            }, 5000); // 5000 milisegundos = 5 segundos (debe coincidir con la transición CSS)
 
-            const cameraDistance = parseFloat(match[1]);
-            const hotspots = modelViewer.querySelectorAll('.hotspot-box');
-
-            if (cameraDistance < zoomThreshold) {
-                // Si la cámara está cerca (hizo zoom), muestra los mensajes completos
-                hotspots.forEach(hotspot => {
-                    hotspot.classList.add('visible');
-                    hotspot.textContent = hotspot.getAttribute('data-message'); // Muestra el mensaje largo
-                });
-            } else {
-                // Si la cámara está lejos, oculta y restaura el texto corto
-                hotspots.forEach(hotspot => {
-                    hotspot.classList.remove('visible');
-                    // Restaura el texto corto inicial 
-                    if (hotspot.slot === 'hotspot-cali') {
-                        hotspot.textContent = 'Cali';
-                    } else if (hotspot.slot === 'hotspot-santacruz') {
-                        hotspot.textContent = 'Santa Cruz';
-                    } else if (hotspot.slot === 'hotspot-center') {
-                         hotspot.textContent = 'Puente de Luz';
-                    } else {
-                         hotspot.textContent = '*'; // Para los puntos de luz intermedios
-                    }
-                });
-            }
+            // 5. Quitar el Listener para que no se pueda hacer clic dos veces
+            trigger.removeEventListener('click', startAurora);
         }
 
-        // Ejecución principal
-        modelViewer.addEventListener('load', () => {
-            
-            // --- ¡PUNTOS CRÍTICOS PARA MODIFICAR! ---
-            // Los 5 puntos a continuación deben ser ajustados (X, Y, Z)
-            // hasta que formen la línea que conecta Cali y Santa Cruz.
-            
-            modelViewer.updateHotspot({
-                slot: 'hotspot-cali', 
-                position: '10.04m 10.99m -10.06m' // MODIFICA ESTOS NÚMEROS
-            });
-            modelViewer.updateHotspot({
-                slot: 'hotspot-santacruz', 
-                position: '10.04m 10.95m 10.29m' // MODIFICA ESTOS NÚMEROS
-            });
-            modelViewer.updateHotspot({
-                slot: 'hotspot-center', 
-                position: '10.04m 10.97m 10.11m' // MODIFICA ESTOS NÚMEROS
-            });
-            modelViewer.updateHotspot({
-                slot: 'hotspot-luz1', 
-                position: '10.04m 10.98m 10.04m' // MODIFICA ESTOS NÚMEROS
-            });
-            modelViewer.updateHotspot({
-                slot: 'hotspot-luz2', 
-                position: '10.04m 10.96m 10.20m' // MODIFICA ESTOS NÚMEROS
-            });
-
-            // Llama a la función de visibilidad cada vez que la cámara cambia (zoom o rotación)
-            modelViewer.addEventListener('camera-change', updateHotspotVisibility);
-        });
-
+        // Asignar la función al botón inicial
+        trigger.addEventListener('click', startAurora);
+        
     </script>
 </body>
 </html>

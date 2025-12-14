@@ -13,22 +13,21 @@
             background-color: #0d1117; /* Fondo oscuro espacial */
             color: #c9d1d9;
             text-align: center;
-            overflow: hidden; /* Evita barras de desplazamiento innecesarias */
+            overflow: hidden; 
         }
         h1 {
-            color: #58a6ff; /* Azul brillante para el título */
+            color: #58a6ff; 
             padding-top: 20px;
             font-size: 2.5em;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); /* Efecto neón */
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); 
         }
         .container {
             width: 95%;
             margin: 0 auto;
         }
-        /* El contenedor principal del modelo 3D */
         model-viewer {
             width: 100%;
-            height: 80vh; /* Ocupa gran parte de la altura para el enfoque */
+            height: 80vh; 
             margin: 10px 0;
             --poster-color: #0d1117; 
         }
@@ -46,9 +45,9 @@
             /* Propiedades para la animación */
             display: block; 
             opacity: 0; /* Inicialmente transparente */
-            visibility: hidden; /* Inicialmente no visible */
+            visibility: hidden; 
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-            pointer-events: none; /* No interfiere con la rotación */
+            pointer-events: none; 
             transform: translate(20px, -20px); 
         }
         /* Clase para hacer visible el hotspot al hacer zoom */
@@ -73,8 +72,7 @@
 
         <model-viewer 
             id="earth-model"
-            src="tierra-noche.glb" 
-            alt="Modelo 3D de la Tierra de Noche"
+            src="tierra-noche.glb"  alt="Modelo 3D de la Tierra de Noche"
             shadow-intensity="1"
             camera-controls
             auto-rotate 
@@ -102,11 +100,9 @@
 
         // Función que revisa si la cámara está cerca del modelo
         function updateHotspotVisibility() {
-            // Extrae la distancia de la cámara del string de orbit (ej: "0deg 90deg 3.8m")
             const cameraOrbit = modelViewer.getCameraOrbit();
             if (!cameraOrbit) return;
 
-            // La expresión regular encuentra el número de distancia (al final del string)
             const match = cameraOrbit.match(/(\d+\.?\d*)\s*m/); 
             if (!match) return;
 
@@ -120,30 +116,34 @@
                     hotspot.textContent = hotspot.getAttribute('data-message'); // Muestra el mensaje largo
                 });
             } else {
-                // Si la cámara está lejos, oculta y muestra el texto corto
+                // Si la cámara está lejos, oculta y restaura el texto corto
                 hotspots.forEach(hotspot => {
                     hotspot.classList.remove('visible');
                     // Restaura el texto corto inicial (ej: "Cali", "Santa Cruz")
-                    hotspot.textContent = hotspot.slot.replace('hotspot-', '').toUpperCase();
+                    if (hotspot.slot === 'hotspot-cali') {
+                        hotspot.textContent = 'Cali';
+                    } else if (hotspot.slot === 'hotspot-santacruz') {
+                        hotspot.textContent = 'Santa Cruz';
+                    } else if (hotspot.slot === 'hotspot-center') {
+                         hotspot.textContent = 'Puente de Luz';
+                    }
                 });
             }
         }
 
         // Ejecución principal
         modelViewer.addEventListener('load', () => {
-            // --- Paso CRÍTICO: Configuración de las coordenadas geográficas ---
             
-            // **IMPORTANTE: Estos valores son de ejemplo.**
-            // Debes AFINAR X, Y, Z mirando el modelo cargado en tu navegador
-            // hasta que los puntos caigan sobre Cali (Colombia) y Santa Cruz (Bolivia).
+            // --- Paso CRÍTICO: Configuración de las coordenadas geográficas ---
+            // ¡Estos valores son para AFINAR! Gira el modelo y ajusta X, Y, Z.
             
             modelViewer.updateHotspot({
                 slot: 'hotspot-cali', 
-                position: '-0.38m 0.8m 0.42m' // Latitud y longitud de Cali
+                position: '-0.38m 0.8m 0.42m' // Coordenadas aproximadas para Cali, Colombia
             });
             modelViewer.updateHotspot({
                 slot: 'hotspot-santacruz', 
-                position: '-0.2m 0.85m 0.49m' // Latitud y longitud de Santa Cruz
+                position: '-0.2m 0.85m 0.49m' // Coordenadas aproximadas para Santa Cruz, Bolivia
             });
              modelViewer.updateHotspot({
                 slot: 'hotspot-center', 

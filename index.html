@@ -10,7 +10,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #05051a; /* Noche Espacial */
+            background-color: #05051a; 
             color: #ffffff;
             overflow: hidden; 
             display: flex;
@@ -62,8 +62,8 @@
         /* --- ESTILO BASE DE LA PARTÍCULA --- */
         .particle {
             position: absolute;
-            width: 8px; /* MÁS GRANDE */
-            height: 8px; /* MÁS GRANDE */
+            width: 8px; 
+            height: 8px; 
             border-radius: 50%;
             opacity: 0;
             right: 5%; 
@@ -72,8 +72,7 @@
             z-index: 8;
             pointer-events: none;
             
-            /* APLICACIÓN DE DIFUMINADO Y SOMBRA */
-            filter: blur(1.5px); /* Más difuminado */
+            filter: blur(1.5px); 
         }
         
         /* La caja de texto que aparece al final */
@@ -129,93 +128,102 @@
     <script>
         // JAVASCRIPT - Lógica de Partículas, Onda y Flujo Constante
 
-        const trigger = document.getElementById('aurora-trigger');
-        const container = document.querySelector('.aurora-container');
-        const messageBox = document.getElementById('message-box');
-        const musicPlayer = document.getElementById('music-player');
-        
+        // --- DECLARACIÓN DE VARIABLES ---
         const colors = ['#4fc3f7', '#7fffd4', '#a8dfff'];
-        
-        // --- CONSTANTES CRÍTICAS PARA EL EFECTO ---
-        const NUM_PARTICLES_PER_WAVE = 15; // Más partículas por pulso
-        const LIFESPAN = 7000; // 7 segundos de vida
-        const GENERATION_INTERVAL = 75; // Generar cada 75ms (más rápido)
-        const WAVE_AMPLITUDE = 40; // ¡AMPLITUD DE ONDA MUY ALTA! (±40% de altura)
+        const NUM_PARTICLES_PER_WAVE = 15; 
+        const LIFESPAN = 7000; 
+        const GENERATION_INTERVAL = 75; 
+        const WAVE_AMPLITUDE = 40; 
         
         let particleCount = 0; 
         let intervalId = null; 
 
-        // --- 1. Generación y Animación de una sola Partícula ---
-        function createAndAnimateParticle() {
-            const p = document.createElement('div');
-            p.classList.add('particle');
-            p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            p.style.boxShadow = `0 0 10px ${p.style.backgroundColor}`; // Sombra más fuerte
+        // --- FUNCIÓN PRINCIPAL DE INICIO ---
+        // Se llama cuando el DOM está completamente cargado.
+        document.addEventListener('DOMContentLoaded', () => {
             
-            // Posición inicial aleatoria cerca del origen (derecha)
-            const initialRight = 5 + (Math.random() * 5); 
-            const initialBottom = 40 + (Math.random() * 5) - 2.5; 
+            // Verificamos que los elementos existan. Si esto falla, es la causa del error.
+            const trigger = document.getElementById('aurora-trigger');
+            const container = document.querySelector('.aurora-container');
+            const messageBox = document.getElementById('message-box');
+            const musicPlayer = document.getElementById('music-player');
             
-            p.style.right = `${initialRight}%`;
-            p.style.bottom = `${initialBottom}%`;
-            
-            // Configuramos la transición CSS para el movimiento y desvanecimiento
-            p.style.transition = `transform ${LIFESPAN}ms linear, opacity 1s linear ${LIFESPAN - 1000}ms`;
-
-            container.appendChild(p);
-
-            // Calculamos la posición final
-            const finalLeft = 105 + (Math.random() * 5); 
-            
-            // LA ONDA: ¡CURVA GRANDE!
-            const sineWave = Math.sin(particleCount * 0.1) * WAVE_AMPLITUDE; // El 0.1 controla la longitud de la onda
-            const finalY = 40 + sineWave + (Math.random() * 5) - 2.5; 
-
-            // Aplicamos el movimiento (Horizontal y Vertical basado en la onda)
-            p.style.transform = `translate(-${finalLeft}vw, ${finalY - 40}vh)`;
-            
-            // Desvanecer al final de la vida
-            p.style.opacity = 0;
-
-            // Limpiar el elemento del DOM una vez que haya terminado su vida
-            setTimeout(() => {
-                p.remove();
-            }, LIFESPAN + 1000); 
-
-            particleCount++;
-        }
-        
-        // --- 2. Función de Flujo Constante ---
-        function generateWave() {
-            for (let i = 0; i < NUM_PARTICLES_PER_WAVE; i++) {
-                createAndAnimateParticle();
+            if (!trigger || !container) {
+                console.error("No se encontraron los elementos HTML. El script no puede continuar.");
+                return; 
             }
-        }
 
-        // --- 3. Control de Flujo Principal ---
-        function startAurora() {
-            // 1. Iniciar la Música
-            musicPlayer.play().catch(error => {
-                console.warn("La música no se pudo iniciar. Continúa la animación.");
-            });
+            // --- 1. Generación y Animación de una sola Partícula ---
+            function createAndAnimateParticle() {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.boxShadow = `0 0 10px ${p.style.backgroundColor}`;
+                
+                // Posición inicial
+                const initialRight = 5 + (Math.random() * 5); 
+                const initialBottom = 40 + (Math.random() * 5) - 2.5; 
+                
+                p.style.right = `${initialRight}%`;
+                p.style.bottom = `${initialBottom}%`;
+                
+                // Transición para el movimiento y desvanecimiento
+                p.style.transition = `transform ${LIFESPAN}ms linear, opacity 1s linear ${LIFESPAN - 1000}ms`;
+
+                container.appendChild(p);
+
+                // Calculamos la posición final (MOVIMIENTO Y ONDA)
+                const finalLeft = 105 + (Math.random() * 5); 
+                const sineWave = Math.sin(particleCount * 0.1) * WAVE_AMPLITUDE; 
+                const finalY = 40 + sineWave + (Math.random() * 5) - 2.5; 
+
+                // Aplicamos el movimiento
+                p.style.transform = `translate(-${finalLeft}vw, ${finalY - 40}vh)`;
+                
+                // Desvanecer al final de la vida
+                p.style.opacity = 0;
+
+                // Limpiar el elemento del DOM 
+                setTimeout(() => {
+                    p.remove();
+                }, LIFESPAN + 1000); 
+
+                particleCount++;
+            }
             
-            // 2. Ocultar el botón de la raíz
-            trigger.style.display = 'none';
+            // --- 2. Función de Flujo Constante ---
+            function generateWave() {
+                for (let i = 0; i < NUM_PARTICLES_PER_WAVE; i++) {
+                    createAndAnimateParticle();
+                }
+            }
 
-            // 3. Iniciar el Flujo Constante de Partículas
-            intervalId = setInterval(generateWave, GENERATION_INTERVAL);
-            
-            // 4. Mostrar el mensaje
-            setTimeout(() => {
-                messageBox.style.opacity = 1;
-            }, 6000); 
+            // --- 3. Control de Flujo Principal (Al hacer clic) ---
+            function startAurora() {
+                // 1. Iniciar la Música
+                musicPlayer.play().catch(error => {
+                    console.warn("La música no se pudo iniciar. Continúa la animación.");
+                });
+                
+                // 2. Ocultar el botón
+                trigger.style.display = 'none';
 
-            // 5. Limpiar y evitar doble clic
-            trigger.removeEventListener('click', startAurora);
-        }
+                // 3. Iniciar el Flujo Constante de Partículas
+                intervalId = setInterval(generateWave, GENERATION_INTERVAL);
+                
+                // 4. Mostrar el mensaje
+                setTimeout(() => {
+                    messageBox.style.opacity = 1;
+                }, 6000); 
 
-        // Asignar la función al botón inicial
-        trigger.addEventListener('click', startAurora);
+                // 5. Limpiar y evitar doble clic
+                trigger.removeEventListener('click', startAurora);
+            }
+
+            // Asignar la función al botón inicial
+            trigger.addEventListener('click', startAurora);
+
+        });
         
     </script>
 </body>

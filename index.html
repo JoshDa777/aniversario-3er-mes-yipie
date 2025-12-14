@@ -6,7 +6,7 @@
     <title>Aurora de Tres Meses: Un Puente de Luz</title>
     
     <style>
-        /* ESTILOS CSS - Define la apariencia (colores, animación, forma de la Aurora) */
+        /* ESTILOS CSS */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -18,7 +18,7 @@
             align-items: center;
             min-height: 100vh;
             flex-direction: column;
-            position: relative; /* Necesario para las estrellas */
+            position: relative;
         }
 
         h1 {
@@ -29,7 +29,7 @@
         }
 
         /* --- SIMULACIÓN DE PARTÍCULAS (ESTRELLAS) --- */
-        /* Usamos pseudo-elementos para crear un campo de estrellas que se anima */
+        /* Mantenemos el fondo de estrellas para el ambiente espacial */
         .stars {
             position: absolute;
             top: 0;
@@ -39,34 +39,29 @@
             pointer-events: none;
             z-index: 1; /* Fondo */
         }
-
-        /* Generamos 3 capas de estrellas con box-shadow */
         .stars:before, .stars:after {
             content: '';
             position: absolute;
             width: 1px;
             height: 1px;
             background: transparent;
-            /* La magia: usamos box-shadow con colores claros para simular estrellas */
+            /* Usamos box-shadow para simular estrellas */
             box-shadow: 
-                /* Estrellas pequeñas y cercanas */
                 100px 50px #fff, 200px 300px #fff, 400px 100px #fff, 
                 650px 400px #fff, 800px 150px #fff, 950px 500px #fff, 1100px 250px #fff;
-            animation: move-stars 100s linear infinite; /* Animación de fondo lenta */
+            animation: move-stars 100s linear infinite;
         }
-        
         .stars:after {
             width: 2px;
             height: 2px;
             box-shadow: 
-                /* Estrellas medianas y lejanas */
                 50px 250px #eee, 350px 50px #eee, 550px 300px #eee, 750px 550px #eee, 900px 50px #eee, 1150px 350px #eee;
-            animation-duration: 150s; /* Más lento */
+            animation-duration: 150s; 
         }
         
         @keyframes move-stars {
             from { transform: translate3d(0, 0, 0); }
-            to { transform: translate3d(-1000px, 1000px, 0); } /* Movimiento muy sutil */
+            to { transform: translate3d(-1000px, 1000px, 0); } 
         }
         
         /* Contenedor principal para centrar la Aurora */
@@ -84,6 +79,12 @@
 
         /* La raíz de la Aurora (el botón que se presiona) */
         #aurora-trigger {
+            /* POSICIONAMIENTO DEL TRIGGER */
+            position: absolute;
+            right: 15%; /* Colocamos el trigger a la derecha */
+            bottom: 50%; /* A mitad de altura, para que la Aurora se expanda hacia la izquierda */
+            transform: translateY(50%); /* Ajuste de centrado vertical */
+            
             background-color: #4fc3f7; 
             width: 50px;
             height: 50px;
@@ -102,29 +103,27 @@
             animation: pulse 1s infinite alternate; 
         }
         
-        /* --- EL NUEVO EFECTO DE AURORA (Filamentos Difusos) --- */
+        /* --- EL NUEVO EFECTO DE AURORA (Filamentos y Partículas desde la DERECHA) --- */
         #aurora-effect {
             position: absolute;
+            right: 0; /* Origen en el lado derecho */
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px; /* Base más ancha */
-            height: 0px; 
+            width: 0px; /* Inicia en cero */
+            height: 100%; 
             
-            /* Degradado vertical y difuso para simular los filamentos */
-            background: radial-gradient(circle at center, 
+            /* Degradado lateral de la Aurora (Derecha -> Izquierda) */
+            background: linear-gradient(to left, 
                 rgba(127, 255, 212, 0.7) 10%, /* Aqua central */
                 rgba(88, 166, 255, 0.5) 40%, /* Azul intermedio */
                 transparent 100%
             );
             
-            /* Sombra suave para el resplandor */
-            box-shadow: 0 0 100px 50px rgba(127, 255, 212, 0.5);
+            /* Usamos blur y clip-path para el efecto de luz difusa y móvil */
+            filter: blur(5px);
             
-            transition: height 5s ease-out, opacity 5s ease-out; /* 5 segundos de animación */
+            transition: width 5s ease-out, opacity 5s ease-out; /* Animación de expansión horizontal */
             opacity: 0; /* Empieza invisible */
             z-index: 5;
-            border-radius: 50% 50% 0 0; /* Bordes superiores curvos */
         }
 
         /* La caja de texto que aparece al final */
@@ -197,9 +196,9 @@
                 console.warn("La música no se pudo iniciar automáticamente. Pero el show debe continuar.");
             });
             
-            // 2. Expandir la Aurora
+            // 2. Expandir la Aurora (Expansión horizontal desde la derecha)
             aurora.style.opacity = 1; 
-            aurora.style.height = '100%'; 
+            aurora.style.width = '100%'; // Se expande de 0 a 100% de ancho
             
             // 3. Ocultar el botón de la raíz
             trigger.style.display = 'none';

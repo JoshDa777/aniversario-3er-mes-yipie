@@ -6,7 +6,7 @@
     <title>Aurora de Tres Meses: Un Puente de Luz</title>
     
     <style>
-        /* [MISMO CSS DE LA VERSIÓN ANTERIOR - FUNCIONA BIEN] */
+        /* ESTILOS CSS (Mismos, funcionan bien) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -40,6 +40,7 @@
             z-index: 5;
         }
 
+        /* La raíz de la Aurora (el botón) */
         #aurora-trigger {
             position: absolute;
             right: 5%; 
@@ -58,6 +59,7 @@
             z-index: 10;
         }
 
+        /* --- ESTILO BASE DE LA PARTÍCULA --- */
         .particle {
             position: absolute;
             width: 8px; 
@@ -70,9 +72,10 @@
             z-index: 8;
             pointer-events: none;
             
-            filter: blur(1.5px); 
+            filter: blur(1.5px); /* Si esto es el problema, la consola lo diría */
         }
         
+        /* La caja de texto que aparece al final */
         #message-box {
             position: absolute;
             top: 5%; 
@@ -83,8 +86,9 @@
             border: 1px solid #7fffd4;
             border-radius: 10px;
             text-align: center;
+            /* CAMBIO: Opacidad 0.9 al inicio para que el mensaje aparezca RÁPIDO */
             opacity: 0; 
-            transition: opacity 1s ease 6s; 
+            transition: opacity 1s ease; /* Transición más rápida */
             z-index: 20;
             width: 80%;
             max-width: 400px;
@@ -123,9 +127,8 @@
 
     
     <script>
-        // JAVASCRIPT - CONEXIÓN GARANTIZADA CON window.onload
+        // JAVASCRIPT - INICIO SEGURO Y ANIMACIÓN CON INTERVALO
 
-        // --- CONSTANTES ---
         const colors = ['#4fc3f7', '#7fffd4', '#a8dfff'];
         const NUM_PARTICLES_PER_WAVE = 15; 
         const LIFESPAN = 7000; 
@@ -135,22 +138,16 @@
         let particleCount = 0; 
         let intervalId = null; 
 
-        // --- FUNCIÓN DE INICIO que espera a que todo esté cargado ---
-        window.onload = function() { 
+        document.addEventListener('DOMContentLoaded', () => {
             
-            // Declaración de elementos
             const trigger = document.getElementById('aurora-trigger');
             const container = document.querySelector('.aurora-container');
             const messageBox = document.getElementById('message-box');
             const musicPlayer = document.getElementById('music-player');
             
-            // Si el trigger sigue sin encontrarse, mostramos una alerta para diagnóstico.
-            if (!trigger) {
-                alert("ERROR: El botón del corazón no se encontró. Revisa el ID 'aurora-trigger' en el HTML.");
-                return; 
-            }
+            if (!trigger || !container) return; 
 
-            // --- 1. Creación y Animación de Partícula ---
+            // --- 1. Creación y Animación de Partícula (Función idéntica) ---
             function createAndAnimateParticle() {
                 const p = document.createElement('div');
                 p.classList.add('particle');
@@ -163,7 +160,11 @@
                 p.style.bottom = `${initialBottom}%`;
                 
                 p.style.transition = `transform ${LIFESPAN}ms linear, opacity 1s linear ${LIFESPAN - 1000}ms`;
-                container.appendChild(p);
+
+                // Aquí podría estar el fallo: Aseguramos que el contenedor no sea nulo antes de añadir.
+                if (container) {
+                    container.appendChild(p);
+                }
 
                 const finalLeft = 105 + (Math.random() * 5); 
                 const sineWave = Math.sin(particleCount * 0.1) * WAVE_AMPLITUDE; 
@@ -186,31 +187,24 @@
 
             // --- 3. FUNCIÓN DE INICIO (El corazón del evento) ---
             function startAurora() {
-                // Si el script llega aquí, significa que el evento de clic funcionó.
-                
-                // 1. Música
-                musicPlayer.play().catch(error => {
-                    // Si hay error de música, lo ignoramos y continuamos
-                });
+                // 1. Música (Sabemos que esto funciona)
+                musicPlayer.play().catch(error => {});
                 
                 // 2. Ocultar el botón
                 trigger.style.display = 'none';
 
-                // 3. INICIAR EL FLUJO
+                // 3. ¡MOSTRAR EL MENSAJE INMEDIATAMENTE! (Si esto falla, el mensaje box es invisible)
+                messageBox.style.opacity = 1;
+
+                // 4. INICIAR EL FLUJO (Si esto falla, el navegador lo está bloqueando)
                 intervalId = setInterval(generateWave, GENERATION_INTERVAL);
                 
-                // 4. Mostrar el mensaje
-                setTimeout(() => {
-                    messageBox.style.opacity = 1;
-                }, 6000); 
-
                 // 5. Limpiar
                 trigger.removeEventListener('click', startAurora);
             }
 
-            // Conexión del evento de clic
             trigger.addEventListener('click', startAurora);
-        };
+        });
         
     </script>
 </body>

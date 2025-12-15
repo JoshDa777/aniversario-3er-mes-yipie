@@ -28,6 +28,7 @@
             z-index: 20; 
             font-size: 2.5em;
             position: relative;
+            text-align: center; /* Asegura que el título se centre bien en móvil */
         }
 
         .aurora-container {
@@ -50,7 +51,7 @@
             width: 100%;
             height: 100%;
             z-index: 5; 
-            opacity: 0; /* Inicia invisible */
+            opacity: 0; 
             transition: opacity 2s ease;
         }
 
@@ -58,14 +59,15 @@
             opacity: 1; 
         }
         
-        /* El botón */
+        /* El botón: OPTIMIZACIÓN MÓVIL */
         #aurora-trigger {
             position: absolute;
-            right: 5%; 
-            bottom: 40%; 
+            right: 50%; /* Centrado horizontal */
+            bottom: 30%; /* Ligeramente más abajo */
+            transform: translateX(50%); /* Ajuste final de centrado */
             background-color: #4fc3f7; 
-            width: 50px;
-            height: 50px;
+            width: 60px; /* Un poco más grande para el dedo */
+            height: 60px; 
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 0 20px #4fc3f7, 0 0 40px #4fc3f7;
@@ -77,27 +79,31 @@
         }
         
         #aurora-trigger.clicked {
-            transform: scale(2);
+            transform: scale(2) translateX(50%); /* Mantiene el centrado al escalar */
             opacity: 0;
         }
 
-        /* Mensaje */
+        /* Mensaje: Aseguramos que sea responsivo */
         #message-box {
             position: absolute;
             top: 15%; 
             left: 50%;
             transform: translateX(-50%);
-            padding: 30px;
-            background: rgba(0, 0, 0, 0.6); 
+            padding: 30px 15px; /* Más padding vertical, menos horizontal en móviles */
+            background: rgba(0, 0, 0, 0.7); /* Ligeramente más opaco para asegurar lectura */
             border: 2px solid #7fffd4;
             border-radius: 15px;
             text-align: center;
             opacity: 0; 
             transition: opacity 1s ease 1s; 
             z-index: 40; 
-            width: 80%;
+            width: 90%; /* Ocupa más ancho en móvil */
             max-width: 500px;
             box-shadow: 0 0 20px rgba(127, 255, 212, 0.3);
+        }
+        
+        #message-box p {
+            font-size: 1em; /* Fuente ligeramente más pequeña en móvil */
         }
         
         #message-box.active {
@@ -117,13 +123,13 @@
     <div class="aurora-container">
         
         <div id="aurora-trigger">
-            <span style="font-size: 24px;">❤️</span>
+            <span style="font-size: 28px;">❤️</span>
         </div>
 
         <div id="message-box">
             <h2 style="color: #7fffd4; margin-bottom: 15px;">¡Felices 3 Meses!</h2>
             <p style="font-size: 1.1em; line-height: 1.6;">Esta aurora es el puente de luz que nos une desde Cali hasta Santa Cruz. Cada día que pasa es un reflejo del brillo que has traído a mi vida en este increíble tercer mes.</p>
-            <p style="font-size: 1.1em; line-height: 1.6;"> Perdona por lo poco, estuve experimentando algunas funciones, te lo hice con cariñio, disfrutalo mucho, esta luz representan mis sentimientos por ti </p>
+            <p style="font-size: 1.1em; line-height: 1.6;"> Perdona por lo poco, estuve experimentando algunas funciones, te lo hice con cariño, disfrútalo mucho, esta luz representan mis sentimientos por ti </p>
             <p style="margin-top: 20px; font-weight: bold; color: #4fc3f7;">Te amo y espero verte pronto. ¡Gracias por estos 92 días!</p>
         </div>
 
@@ -193,7 +199,7 @@
 
             // Inicializar las partículas
             function initParticles() {
-                const particleCount = 1800; // <--- MODIFICADO para optimizar el rendimiento
+                const particleCount = 1800; 
                 const colors = [
                     'rgba(79, 195, 247, 0.9)',  // Azul Claro
                     'rgba(127, 255, 212, 0.9)', // Aqua
@@ -203,7 +209,8 @@
                 particles = [];
                 for (let i = 0; i < particleCount; i++) {
                     const x = Math.random() * canvas.width;
-                    const y = canvas.height * 0.3 + (Math.random() - 0.5) * canvas.height * 0.1;
+                    // POSICIÓN DE LA AURORA OPTIMIZADA PARA MÓVIL
+                    const y = canvas.height * 0.4 + (Math.random() - 0.5) * canvas.height * 0.1; 
                     const color = colors[Math.floor(Math.random() * colors.length)];
                     particles.push(new Particle(x, y, color));
                 }

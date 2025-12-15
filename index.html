@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora de Tres Meses: Un Puente de Luz</title>
+    <title>Aurora de Tres Meses</title>
     
     <style>
         /* ESTILOS CSS */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #05051a; 
+            background-color: #05051a; /* Fondo base oscuro */
             color: #ffffff;
             overflow: hidden; 
             display: flex;
@@ -21,14 +21,17 @@
             position: relative;
         }
 
+        /* CAPA 1: Título (Z-Index alto para que siempre se lea) */
         h1 {
             color: #fff;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra base simple */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); 
             padding-top: 20px;
-            z-index: 20;
-            font-size: 2.5em; 
+            z-index: 20; /* Prioridad de visualización */
+            font-size: 2.5em;
+            position: relative;
         }
 
+        /* Contenedor principal */
         .aurora-container {
             position: relative;
             width: 100vw; 
@@ -38,51 +41,47 @@
             align-items: flex-end; 
             overflow: hidden;
             margin-top: 10px; 
-            z-index: 5;
+            z-index: 10; /* Contenido por encima de la aurora */
         }
 
-        /* --- ELEMENTO INVISIBLE DE LA AURORA (LA RAÍZ DE LUZ) --- */
-        #aurora-light-source {
+        /* --- CAPA 2: LA AURORA (FONDO ANIMADO) --- */
+        /* Esta capa está detrás del texto (z-index 5) pero delante del fondo negro */
+        #aurora-layer {
             position: absolute;
-            right: 5%; 
-            bottom: 40%; 
-            width: 1px; /* Dimensión mínima */
-            height: 1px;
-            background: transparent;
-            z-index: 9;
-            opacity: 0; /* Inicia invisible */
-            transition: opacity 2s ease;
-        }
-        
-        /* Clase que se activa con el clic para iniciar la sombra */
-        #aurora-light-source.aurora-active {
-            opacity: 1;
-            /* La "sombra del texto" se usa aquí como una sombra de elemento que simula la Aurora */
-            box-shadow: 
-                0 0 50px 20px rgba(79, 195, 247, 0.5), /* Azul claro (núcleo) */
-                0 0 100px 40px rgba(127, 255, 212, 0.4), /* Aqua (filamento) */
-                0 0 200px 80px rgba(168, 223, 255, 0.3); /* Blanco Azulado (difusión) */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Permite clicks a través de ella */
+            z-index: 5; 
+            opacity: 0; /* Empieza invisible */
+            transition: opacity 3s ease; /* Aparece suavemente */
             
-            /* Animación para el pulso y movimiento sutil */
-            animation: light-pulse 3s linear infinite alternate, 
-                       light-wave 15s linear infinite;
+            /* El degradado de la Aurora */
+            background: linear-gradient(
+                135deg, 
+                transparent 0%, 
+                rgba(79, 195, 247, 0.2) 25%,  /* Azul transparente */
+                rgba(127, 255, 212, 0.4) 50%, /* Aqua visible */
+                rgba(168, 223, 255, 0.2) 75%, /* Lila transparente */
+                transparent 100%
+            );
+            background-size: 400% 400%; /* Tamaño grande para moverlo */
         }
 
-        /* ANIMACIÓN 1: Pulso de la Luz (La intensidad cambia) */
-        @keyframes light-pulse {
-            0% { box-shadow: 0 0 50px 20px rgba(79, 195, 247, 0.5), 0 0 100px 40px rgba(127, 255, 212, 0.4), 0 0 200px 80px rgba(168, 223, 255, 0.3); }
-            100% { box-shadow: 0 0 70px 30px rgba(79, 195, 247, 0.8), 0 0 150px 60px rgba(127, 255, 212, 0.6), 0 0 300px 120px rgba(168, 223, 255, 0.5); }
-        }
-        
-        /* ANIMACIÓN 2: Movimiento de Onda Suave */
-        @keyframes light-wave {
-            0% { transform: scaleY(1) translateX(0); }
-            50% { transform: scaleY(1.1) translateX(-10vw); } /* Estira y mueve ligeramente a la izquierda */
-            100% { transform: scaleY(1) translateX(0); }
+        /* Animación activa */
+        #aurora-layer.active {
+            opacity: 1;
+            animation: aurora-move 15s ease infinite;
         }
 
+        @keyframes aurora-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-        /* Botón (Trigger) */
+        /* CAPA 3: EL BOTÓN (RAÍZ) */
         #aurora-trigger {
             position: absolute;
             right: 5%; 
@@ -93,102 +92,100 @@
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 0 20px #4fc3f7, 0 0 40px #4fc3f7;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10;
+            z-index: 30; /* El botón siempre arriba */
+        }
+        
+        /* Animación de explosión al hacer clic */
+        #aurora-trigger.clicked {
+            transform: scale(2);
+            opacity: 0;
         }
 
-        /* Mensaje */
+        /* CAPA 4: MENSAJE */
         #message-box {
             position: absolute;
-            top: 5%; 
+            top: 15%; /* Más abajo para no tapar título */
             left: 50%;
             transform: translateX(-50%);
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #7fffd4;
-            border-radius: 10px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.6); /* Fondo semitransparente para leer bien */
+            border: 2px solid #7fffd4;
+            border-radius: 15px;
             text-align: center;
             opacity: 0; 
-            transition: opacity 1s ease 1s; 
-            z-index: 20;
+            transition: opacity 1s ease; 
+            z-index: 40; /* Lo más alto */
             width: 80%;
-            max-width: 400px;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(127, 255, 212, 0.3);
         }
         
         #message-box.active {
             opacity: 1;
         }
-        
-        /* Clases de control JS */
-        .hidden {
-            display: none !important;
-        }
-        
+
+        /* Clases auxiliares */
+        .hidden { display: none !important; }
     </style>
 </head>
 
 <body>
+    
+    <div id="aurora-layer"></div>
 
-    <h1 id="main-title">⭐ Presiona la Raíz de la Aurora ⭐</h1>
+    <h1>⭐ Presiona la Raíz de la Aurora ⭐</h1>
     
     <div class="aurora-container">
         
-        <div id="aurora-light-source"></div>
-
         <div id="aurora-trigger">
-            <span>❤️</span>
+            <span style="font-size: 24px;">❤️</span>
         </div>
 
         <div id="message-box">
-            <h2>¡Felices 3 Meses!</h2>
-            <p>Esta aurora es el puente de luz que nos une desde Cali hasta Santa Cruz. Cada día que pasa es un reflejo del brillo que has traído a mi vida en este increíble tercer mes.</p>
-            <p>Te amo y espero verte pronto. ¡Gracias por estos 92 días!</p>
+            <h2 style="color: #7fffd4; margin-bottom: 15px;">¡Felices 3 Meses!</h2>
+            <p style="font-size: 1.1em; line-height: 1.6;">Esta aurora es el puente de luz que nos une desde Cali hasta Santa Cruz. Cada día que pasa es un reflejo del brillo que has traído a mi vida en este increíble tercer mes.</p>
+            <p style="margin-top: 20px; font-weight: bold; color: #4fc3f7;">Te amo y espero verte pronto. ¡Gracias por estos 92 días!</p>
         </div>
 
     </div>
 
     <audio id="music-player" src="./musica-aurora.mp3" preload="auto"></audio>
 
-    
     <script>
-        // JAVASCRIPT - CONEXIÓN CON CLASES CSS
-
         document.addEventListener('DOMContentLoaded', () => {
             
             const trigger = document.getElementById('aurora-trigger');
+            const auroraLayer = document.getElementById('aurora-layer');
             const messageBox = document.getElementById('message-box');
             const musicPlayer = document.getElementById('music-player');
-            const lightSource = document.getElementById('aurora-light-source'); // Nuevo elemento
-            
 
-            if (!trigger || !lightSource) return; 
+            function startExperience() {
+                // 1. Reproducir música
+                musicPlayer.play().catch(e => console.log("Audio play failed:", e));
 
-            // --- FUNCIÓN DE INICIO ---
-            function startAurora() {
-                // 1. Música (Sabemos que funciona)
-                musicPlayer.play().catch(error => {});
+                // 2. Animar botón (efecto de explosión)
+                trigger.classList.add('clicked');
                 
-                // 2. Ocultar el botón
-                trigger.classList.add('hidden');
+                // 3. Mostrar la Aurora (Fondo)
+                auroraLayer.classList.add('active');
 
-                // 3. INICIAR LA AURORA (Activando la luz de la fuente)
-                lightSource.classList.add('aurora-active');
-
-                // 4. MOSTRAR EL MENSAJE (con retraso)
+                // 4. Mostrar mensaje (con pequeño retraso para efecto dramático)
                 setTimeout(() => {
                     messageBox.classList.add('active');
-                }, 2000); 
+                }, 1500);
 
-                // 5. Limpiar
-                trigger.removeEventListener('click', startAurora);
+                // 5. Eliminar el botón después de la animación para limpiar
+                setTimeout(() => {
+                    trigger.style.display = 'none';
+                }, 500);
             }
 
-            trigger.addEventListener('click', startAurora);
+            trigger.addEventListener('click', startExperience);
         });
-        
     </script>
 </body>
 </html>

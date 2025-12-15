@@ -6,7 +6,7 @@
     <title>Aurora de Tres Meses: Un Puente de Luz</title>
     
     <style>
-        /* ESTILOS CSS (Mismos, funcionan bien) */
+        /* ESTILOS CSS */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -45,7 +45,6 @@
             position: absolute;
             right: 5%; 
             bottom: 40%; 
-            
             background-color: #4fc3f7; 
             width: 50px;
             height: 50px;
@@ -58,24 +57,29 @@
             align-items: center;
             z-index: 10;
         }
-
+        
+        /* Ocultar elementos (Clase controlada por JS) */
+        .hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+        
         /* --- ESTILO BASE DE LA PARTÍCULA --- */
         .particle {
             position: absolute;
             width: 8px; 
             height: 8px; 
             border-radius: 50%;
-            opacity: 0;
+            opacity: 0; /* Inicia invisible */
             right: 5%; 
             bottom: 40%;
             transition: none;
             z-index: 8;
             pointer-events: none;
-            
-            filter: blur(1.5px); /* Si esto es el problema, la consola lo diría */
+            filter: blur(1.5px); 
         }
         
-        /* La caja de texto que aparece al final */
+        /* La caja de texto (controlada por JS) */
         #message-box {
             position: absolute;
             top: 5%; 
@@ -86,15 +90,16 @@
             border: 1px solid #7fffd4;
             border-radius: 10px;
             text-align: center;
-            /* CAMBIO: Opacidad 0.9 al inicio para que el mensaje aparezca RÁPIDO */
-            opacity: 0; 
-            transition: opacity 1s ease; /* Transición más rápida */
+            opacity: 0; /* Inicia invisible */
+            transition: opacity 1s ease; 
             z-index: 20;
             width: 80%;
             max-width: 400px;
         }
-        #message-box h2 {
-            color: #7fffd4;
+        
+        /* Clase para MOSTRAR el mensaje */
+        #message-box.active {
+            opacity: 1;
         }
 
         @keyframes pulse {
@@ -127,8 +132,9 @@
 
     
     <script>
-        // JAVASCRIPT - INICIO SEGURO Y ANIMACIÓN CON INTERVALO
+        // JAVASCRIPT - CONEXIÓN CON CLASES CSS
 
+        // --- CONSTANTES ---
         const colors = ['#4fc3f7', '#7fffd4', '#a8dfff'];
         const NUM_PARTICLES_PER_WAVE = 15; 
         const LIFESPAN = 7000; 
@@ -160,18 +166,14 @@
                 p.style.bottom = `${initialBottom}%`;
                 
                 p.style.transition = `transform ${LIFESPAN}ms linear, opacity 1s linear ${LIFESPAN - 1000}ms`;
-
-                // Aquí podría estar el fallo: Aseguramos que el contenedor no sea nulo antes de añadir.
-                if (container) {
-                    container.appendChild(p);
-                }
+                container.appendChild(p);
 
                 const finalLeft = 105 + (Math.random() * 5); 
                 const sineWave = Math.sin(particleCount * 0.1) * WAVE_AMPLITUDE; 
                 const finalY = 40 + sineWave + (Math.random() * 5) - 2.5; 
 
                 p.style.transform = `translate(-${finalLeft}vw, ${finalY - 40}vh)`;
-                p.style.opacity = 0;
+                p.style.opacity = 0; // Desvanecer al final de la vida
 
                 setTimeout(() => { p.remove(); }, LIFESPAN + 1000); 
 
@@ -187,18 +189,20 @@
 
             // --- 3. FUNCIÓN DE INICIO (El corazón del evento) ---
             function startAurora() {
-                // 1. Música (Sabemos que esto funciona)
+                // 1. Música
                 musicPlayer.play().catch(error => {});
                 
-                // 2. Ocultar el botón
-                trigger.style.display = 'none';
+                // 2. Ocultar el botón (USO DE CLASE CSS)
+                trigger.classList.add('hidden');
 
-                // 3. ¡MOSTRAR EL MENSAJE INMEDIATAMENTE! (Si esto falla, el mensaje box es invisible)
-                messageBox.style.opacity = 1;
-
-                // 4. INICIAR EL FLUJO (Si esto falla, el navegador lo está bloqueando)
+                // 3. INICIAR EL FLUJO
                 intervalId = setInterval(generateWave, GENERATION_INTERVAL);
                 
+                // 4. MOSTRAR EL MENSAJE (USO DE CLASE CSS)
+                setTimeout(() => {
+                    messageBox.classList.add('active');
+                }, 6000); 
+
                 // 5. Limpiar
                 trigger.removeEventListener('click', startAurora);
             }

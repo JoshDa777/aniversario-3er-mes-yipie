@@ -158,8 +158,8 @@
                     this.x = x;
                     this.y = y;
                     this.color = color;
-                    this.radius = Math.random() * 1.5 + 1; // Un poco más grandes
-                    this.speed = Math.random() * 0.1 + 0.05; // Velocidad de movimiento
+                    this.radius = Math.random() * 1.5 + 1; 
+                    this.speed = Math.random() * 0.1 + 0.05; 
                 }
 
                 draw() {
@@ -184,7 +184,6 @@
                     }
 
                     // FÓRMULA DE MOVIMIENTO DE ONDA MUY SIMPLE (Basada en el tiempo)
-                    // Hacemos que la posición vertical oscile lentamente
                     this.y = this.initialY + Math.sin(this.x * 0.005 + time * 0.5) * 50; 
 
                     this.draw();
@@ -193,7 +192,7 @@
 
             // Inicializar las partículas
             function initParticles() {
-                const particleCount = 3000; // Aumentamos la densidad
+                const particleCount = 1800; // <--- MODIFICADO para optimizar el rendimiento
                 const colors = [
                     'rgba(79, 195, 247, 0.9)',  // Azul Claro
                     'rgba(127, 255, 212, 0.9)', // Aqua
@@ -203,7 +202,6 @@
                 particles = [];
                 for (let i = 0; i < particleCount; i++) {
                     const x = Math.random() * canvas.width;
-                    // Iniciar las partículas en el centro superior (donde iría la aurora)
                     const y = canvas.height * 0.3 + (Math.random() - 0.5) * canvas.height * 0.1;
                     const color = colors[Math.floor(Math.random() * colors.length)];
                     particles.push(new Particle(x, y, color));
@@ -215,7 +213,6 @@
                 if (!isAnimating) return;
 
                 // 1. LIMPIEZA EXTREMADAMENTE SUAVE (Crea un rastro muy denso)
-                // Usamos un valor de opacidad muy bajo (0.005) para que el rastro dure mucho
                 ctx.fillStyle = 'rgba(5, 5, 26, 0.005)'; 
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 

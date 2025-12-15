@@ -21,48 +21,12 @@
             position: relative;
         }
 
-        /* --- TÍTULO Y AURORA BASADA EN TEXT-SHADOW --- */
         h1 {
             color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra base simple */
             padding-top: 20px;
             z-index: 20;
             font-size: 2.5em; 
-            transition: all 1s ease; /* Transición suave para el cambio de sombra */
-        }
-        
-        /* Clase que se activa con el clic para iniciar la sombra */
-        h1.aurora-active {
-            /* Text-shadow que simula la luz difusa de la Aurora */
-            text-shadow: 
-                0 0 10px #fff,
-                0 0 20px rgba(79, 195, 247, 0.8), /* Azul claro */
-                0 0 40px rgba(127, 255, 212, 0.7); /* Aqua */
-            
-            /* Animación: Hace que la sombra palpite y cambie de color sutilmente */
-            animation: text-pulse 3s linear infinite alternate, 
-                       color-shift 10s linear infinite;
-        }
-
-        /* ANIMACIÓN 1: Pulso de la Luz (Simula el movimiento energético de la Aurora) */
-        @keyframes text-pulse {
-            0% {
-                text-shadow: 
-                    0 0 10px #fff,
-                    0 0 20px rgba(79, 195, 247, 0.8),
-                    0 0 40px rgba(127, 255, 212, 0.7);
-            }
-            100% {
-                text-shadow: 
-                    0 0 15px #fff,
-                    0 0 30px rgba(79, 195, 247, 1),
-                    0 0 60px rgba(127, 255, 212, 0.9);
-            }
-        }
-        
-        /* ANIMACIÓN 2: Cambio de Color Sutil (Hue-Rotate solo en el texto) */
-        @keyframes color-shift {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
         }
 
         .aurora-container {
@@ -76,6 +40,47 @@
             margin-top: 10px; 
             z-index: 5;
         }
+
+        /* --- ELEMENTO INVISIBLE DE LA AURORA (LA RAÍZ DE LUZ) --- */
+        #aurora-light-source {
+            position: absolute;
+            right: 5%; 
+            bottom: 40%; 
+            width: 1px; /* Dimensión mínima */
+            height: 1px;
+            background: transparent;
+            z-index: 9;
+            opacity: 0; /* Inicia invisible */
+            transition: opacity 2s ease;
+        }
+        
+        /* Clase que se activa con el clic para iniciar la sombra */
+        #aurora-light-source.aurora-active {
+            opacity: 1;
+            /* La "sombra del texto" se usa aquí como una sombra de elemento que simula la Aurora */
+            box-shadow: 
+                0 0 50px 20px rgba(79, 195, 247, 0.5), /* Azul claro (núcleo) */
+                0 0 100px 40px rgba(127, 255, 212, 0.4), /* Aqua (filamento) */
+                0 0 200px 80px rgba(168, 223, 255, 0.3); /* Blanco Azulado (difusión) */
+            
+            /* Animación para el pulso y movimiento sutil */
+            animation: light-pulse 3s linear infinite alternate, 
+                       light-wave 15s linear infinite;
+        }
+
+        /* ANIMACIÓN 1: Pulso de la Luz (La intensidad cambia) */
+        @keyframes light-pulse {
+            0% { box-shadow: 0 0 50px 20px rgba(79, 195, 247, 0.5), 0 0 100px 40px rgba(127, 255, 212, 0.4), 0 0 200px 80px rgba(168, 223, 255, 0.3); }
+            100% { box-shadow: 0 0 70px 30px rgba(79, 195, 247, 0.8), 0 0 150px 60px rgba(127, 255, 212, 0.6), 0 0 300px 120px rgba(168, 223, 255, 0.5); }
+        }
+        
+        /* ANIMACIÓN 2: Movimiento de Onda Suave */
+        @keyframes light-wave {
+            0% { transform: scaleY(1) translateX(0); }
+            50% { transform: scaleY(1.1) translateX(-10vw); } /* Estira y mueve ligeramente a la izquierda */
+            100% { transform: scaleY(1) translateX(0); }
+        }
+
 
         /* Botón (Trigger) */
         #aurora-trigger {
@@ -131,6 +136,8 @@
     
     <div class="aurora-container">
         
+        <div id="aurora-light-source"></div>
+
         <div id="aurora-trigger">
             <span>❤️</span>
         </div>
@@ -154,10 +161,10 @@
             const trigger = document.getElementById('aurora-trigger');
             const messageBox = document.getElementById('message-box');
             const musicPlayer = document.getElementById('music-player');
-            const mainTitle = document.getElementById('main-title'); // Nuevo elemento
+            const lightSource = document.getElementById('aurora-light-source'); // Nuevo elemento
             
 
-            if (!trigger || !mainTitle) return; 
+            if (!trigger || !lightSource) return; 
 
             // --- FUNCIÓN DE INICIO ---
             function startAurora() {
@@ -167,8 +174,8 @@
                 // 2. Ocultar el botón
                 trigger.classList.add('hidden');
 
-                // 3. INICIAR LA AURORA (Aplicando animación directamente al título)
-                mainTitle.classList.add('aurora-active');
+                // 3. INICIAR LA AURORA (Activando la luz de la fuente)
+                lightSource.classList.add('aurora-active');
 
                 // 4. MOSTRAR EL MENSAJE (con retraso)
                 setTimeout(() => {

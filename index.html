@@ -57,29 +57,8 @@
             align-items: center;
             z-index: 10;
         }
-        
-        /* Ocultar elementos (Clase controlada por JS) */
-        .hidden {
-            opacity: 0 !important;
-            pointer-events: none;
-        }
-        
-        /* --- ESTILO BASE DE LA PARTÍCULA --- */
-        .particle {
-            position: absolute;
-            width: 8px; 
-            height: 8px; 
-            border-radius: 50%;
-            opacity: 0; /* Inicia invisible */
-            right: 5%; 
-            bottom: 40%;
-            transition: none;
-            z-index: 8;
-            pointer-events: none;
-            filter: blur(1.5px); 
-        }
-        
-        /* La caja de texto (controlada por JS) */
+
+        /* La caja de texto (controlada por la clase .active) */
         #message-box {
             position: absolute;
             top: 5%; 
@@ -90,18 +69,66 @@
             border: 1px solid #7fffd4;
             border-radius: 10px;
             text-align: center;
-            opacity: 0; /* Inicia invisible */
-            transition: opacity 1s ease; 
+            opacity: 0; 
+            transition: opacity 1s ease 1s; /* Retraso para que aparezca después del efecto */
             z-index: 20;
             width: 80%;
             max-width: 400px;
         }
         
-        /* Clase para MOSTRAR el mensaje */
         #message-box.active {
             opacity: 1;
         }
+        
+        /* --- NUEVA AURORA (UN SOLO ELEMENTO CSS ANIMADO) --- */
+        #aurora-effect {
+            position: absolute;
+            right: 0; /* Origen a la derecha */
+            bottom: 0; 
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Inicia invisible */
+            z-index: 8;
+            transition: opacity 2s ease; /* Para que aparezca suavemente */
+            
+            /* Degradado de colores de la Aurora (Azul, Aqua, Púrpura) */
+            background: linear-gradient(
+                90deg, 
+                rgba(139, 0, 255, 0.5) 0%, /* Púrpura */
+                rgba(0, 150, 255, 0.8) 30%,  /* Azul */
+                rgba(127, 255, 212, 0.8) 70%, /* Aqua */
+                rgba(139, 0, 255, 0.5) 100% /* Púrpura */
+            );
 
+            /* Aplica desenfoque fuerte para simular partículas difusas */
+            filter: blur(100px) hue-rotate(0deg); 
+
+            /* Clase para iniciar la animación */
+            &.active {
+                opacity: 1;
+                animation: aurora-move 15s linear infinite, 
+                           aurora-color 20s linear infinite; 
+            }
+        }
+        
+        /* Animación 1: Movimiento horizontal y vertical (ONDA) */
+        @keyframes aurora-move {
+            0% { transform: scaleX(1.5) translateX(0) translateY(0); }
+            50% { transform: scaleX(1.4) translateX(-20%) translateY(5%); }
+            100% { transform: scaleX(1.5) translateX(0) translateY(0); }
+        }
+
+        /* Animación 2: Cambio de color (efecto energético) */
+        @keyframes aurora-color {
+            0% { filter: blur(100px) hue-rotate(0deg); }
+            100% { filter: blur(100px) hue-rotate(360deg); } /* Gira 360 grados sobre los colores del degradado */
+        }
+        
+        /* Clases de control JS */
+        .hidden {
+            display: none !important;
+        }
+        
         @keyframes pulse {
             from { opacity: 0.5; }
             to { opacity: 1; }
@@ -116,6 +143,8 @@
     
     <div class="aurora-container">
         
+        <div id="aurora-effect"></div>
+
         <div id="aurora-trigger">
             <span>❤️</span>
         </div>
@@ -134,74 +163,31 @@
     <script>
         // JAVASCRIPT - CONEXIÓN CON CLASES CSS
 
-        // --- CONSTANTES ---
-        const colors = ['#4fc3f7', '#7fffd4', '#a8dfff'];
-        const NUM_PARTICLES_PER_WAVE = 15; 
-        const LIFESPAN = 7000; 
-        const GENERATION_INTERVAL = 75; 
-        const WAVE_AMPLITUDE = 40; 
-        
-        let particleCount = 0; 
-        let intervalId = null; 
-
         document.addEventListener('DOMContentLoaded', () => {
             
             const trigger = document.getElementById('aurora-trigger');
             const container = document.querySelector('.aurora-container');
             const messageBox = document.getElementById('message-box');
             const musicPlayer = document.getElementById('music-player');
-            
-            if (!trigger || !container) return; 
+            const auroraEffect = document.getElementById('aurora-effect'); // Nuevo elemento
 
-            // --- 1. Creación y Animación de Partícula (Función idéntica) ---
-            function createAndAnimateParticle() {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                p.style.boxShadow = `0 0 10px ${p.style.backgroundColor}`;
-                
-                const initialRight = 5 + (Math.random() * 5); 
-                const initialBottom = 40 + (Math.random() * 5) - 2.5; 
-                p.style.right = `${initialRight}%`;
-                p.style.bottom = `${initialBottom}%`;
-                
-                p.style.transition = `transform ${LIFESPAN}ms linear, opacity 1s linear ${LIFESPAN - 1000}ms`;
-                container.appendChild(p);
+            if (!trigger || !container || !auroraEffect) return; 
 
-                const finalLeft = 105 + (Math.random() * 5); 
-                const sineWave = Math.sin(particleCount * 0.1) * WAVE_AMPLITUDE; 
-                const finalY = 40 + sineWave + (Math.random() * 5) - 2.5; 
-
-                p.style.transform = `translate(-${finalLeft}vw, ${finalY - 40}vh)`;
-                p.style.opacity = 0; // Desvanecer al final de la vida
-
-                setTimeout(() => { p.remove(); }, LIFESPAN + 1000); 
-
-                particleCount++;
-            }
-            
-            // --- 2. Función de Flujo Constante ---
-            function generateWave() {
-                for (let i = 0; i < NUM_PARTICLES_PER_WAVE; i++) {
-                    createAndAnimateParticle();
-                }
-            }
-
-            // --- 3. FUNCIÓN DE INICIO (El corazón del evento) ---
+            // --- FUNCIÓN DE INICIO ---
             function startAurora() {
-                // 1. Música
+                // 1. Música (Sabemos que funciona)
                 musicPlayer.play().catch(error => {});
                 
                 // 2. Ocultar el botón (USO DE CLASE CSS)
                 trigger.classList.add('hidden');
 
-                // 3. INICIAR EL FLUJO
-                intervalId = setInterval(generateWave, GENERATION_INTERVAL);
-                
-                // 4. MOSTRAR EL MENSAJE (USO DE CLASE CSS)
+                // 3. INICIAR LA AURORA (Añade la clase 'active' que tiene las animaciones CSS)
+                auroraEffect.classList.add('active');
+
+                // 4. MOSTRAR EL MENSAJE (USO DE CLASE CSS, con retraso)
                 setTimeout(() => {
                     messageBox.classList.add('active');
-                }, 6000); 
+                }, 2000); // 2 segundos después del inicio de la Aurora
 
                 // 5. Limpiar
                 trigger.removeEventListener('click', startAurora);

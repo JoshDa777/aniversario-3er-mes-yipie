@@ -42,48 +42,47 @@
             z-index: 10;
         }
 
-        /* --- LA AURORA (Box-Shadow Altamente Desenfoque) --- */
+        /* --- LA AURORA: ELEMENTO GIGANTE Y DIFUSO --- */
         #aurora-layer {
             position: absolute;
             top: 0; 
             left: 0;
             width: 100%;
-            height: 35%; /* LIMITADA AL TERCIO SUPERIOR */
+            height: 100%;
             pointer-events: none; 
             z-index: 5; 
             opacity: 0;
             transition: opacity 3s ease;
             
-            /* El elemento base es un punto muy pequeño en el centro superior */
-            width: 10px;
-            height: 10px;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            background-color: transparent; /* No tiene fondo propio */
-
-            /* Desenfoque alto para evitar que parezca una mancha */
-            filter: blur(100px); 
+            /* El elemento de la aurora en sí mismo, colocado para cubrir el cielo */
+            background: radial-gradient(
+                circle at 50% 100%, /* Origen en el centro inferior del elemento */
+                rgba(79, 195, 247, 0.5) 0%, 
+                rgba(127, 255, 212, 0.3) 15%, 
+                transparent 30%
+            );
+            
+            /* Hacemos el degradado más grande y forzamos el desenfoque */
+            background-size: 250% 150%; 
+            filter: blur(100px); /* Desenfoque extremo para la apariencia de luz */
+            
+            /* El elemento empieza fuera de la vista para luego moverse */
+            transform: translateY(100%); 
         }
 
         /* Animación activa */
         #aurora-layer.active {
             opacity: 1;
-            /* La sombra gigante que se mueve para simular la Aurora */
-            box-shadow: 
-                0 0 150px 50px rgba(79, 195, 247, 0.6), /* Azul claro */
-                0 0 300px 100px rgba(127, 255, 212, 0.5), /* Aqua */
-                0 0 500px 150px rgba(168, 223, 255, 0.4); /* Blanco Azulado */
-            
-            animation: aurora-wave 15s ease-in-out infinite alternate;
+            /* Subimos el elemento a la posición central superior (el cielo) */
+            transform: translateY(-50%); 
+            animation: aurora-wave 20s ease-in-out infinite alternate;
         }
 
-        /* Movimiento lateral y ondulado (ahora aplicado al box-shadow gigante) */
+        /* Movimiento lateral y ondulado */
         @keyframes aurora-wave {
-            0% { transform: translateX(-50%) scaleY(1); }
-            50% { transform: translateX(-60%) scaleY(1.3); } /* Onda más alta a la izquierda */
-            100% { transform: translateX(-50%) scaleY(1); }
+            0% { background-position: 0% 100%; transform: rotate(0deg) translateY(-50%) scaleX(1); }
+            50% { background-position: 100% 50%; transform: rotate(2deg) translateY(-60%) scaleX(1.1); } 
+            100% { background-position: 0% 100%; transform: rotate(0deg) translateY(-50%) scaleX(1); }
         }
 
         /* El botón */

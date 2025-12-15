@@ -154,60 +154,57 @@
             class Particle {
                 constructor(x, y, color) {
                     this.initialX = x;
+                    this.initialY = y;
+                    this.x = x;
                     this.y = y;
                     this.color = color;
-                    this.radius = Math.random() * 0.8 + 0.5; // Tamaño pequeño
-                    this.speed = Math.random() * 0.05 + 0.01; // Velocidad de movimiento
+                    this.radius = Math.random() * 1.5 + 1; // Un poco más grandes
+                    this.speed = Math.random() * 0.1 + 0.05; // Velocidad de movimiento
                 }
 
                 draw() {
                     ctx.beginPath();
+                    // Usamos un pequeño desenfoque para que cada punto se vea como luz difusa
+                    ctx.shadowBlur = this.radius * 2;
+                    ctx.shadowColor = this.color;
                     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                     ctx.fillStyle = this.color;
                     ctx.fill();
                 }
 
                 update() {
-                    // Mover la partícula lentamente hacia la izquierda (efecto de flujo)
-                    this.x -= this.speed;
-
-                    // Si la partícula sale del límite izquierdo, reaparece por la derecha
-                    if (this.x < 0) {
+                    // Mover la partícula lentamente hacia la izquierda y arriba
+                    this.x -= this.speed * 1.5;
+                    this.y -= this.speed * 0.5;
+                    
+                    // Si la partícula sale del límite, reaparece en la posición inicial
+                    if (this.x < 0 || this.y < 0) {
                         this.x = canvas.width;
+                        this.y = this.initialY;
                     }
 
-                    // Calcular la posición vertical (Y) con una función de onda (Seno)
-                    // La amplitud define la altura de la aurora
-                    const waveHeight = canvas.height * 0.25; 
-                    // La frecuencia hace la forma de onda
-                    const waveFrequency = 0.005; 
-                    
-                    // La posición Y se calcula añadiendo una onda senoidal al Y inicial (horizontal)
-                    this.y = this.initialY + Math.sin(this.x * waveFrequency + time) * waveHeight;
-                    
-                    // Asegurarse de que la partícula no esté demasiado abajo (corta la onda)
-                    if (this.y > canvas.height * 0.95) {
-                        this.y = canvas.height * 0.95;
-                    }
+                    // FÓRMULA DE MOVIMIENTO DE ONDA MUY SIMPLE (Basada en el tiempo)
+                    // Hacemos que la posición vertical oscile lentamente
+                    this.y = this.initialY + Math.sin(this.x * 0.005 + time * 0.5) * 50; 
 
                     this.draw();
                 }
             }
 
-            // Inicializar las partículas en forma de onda sutil
+            // Inicializar las partículas
             function initParticles() {
-                const particleCount = 2000;
+                const particleCount = 3000; // Aumentamos la densidad
                 const colors = [
-                    'rgba(79, 195, 247, 0.7)',  // Azul Claro
-                    'rgba(127, 255, 212, 0.7)', // Aqua
-                    'rgba(168, 223, 255, 0.7)'  // Blanco Azulado
+                    'rgba(79, 195, 247, 0.9)',  // Azul Claro
+                    'rgba(127, 255, 212, 0.9)', // Aqua
+                    'rgba(168, 223, 255, 0.9)'  // Blanco Azulado
                 ];
                 
                 particles = [];
                 for (let i = 0; i < particleCount; i++) {
                     const x = Math.random() * canvas.width;
-                    // Iniciar las partículas ligeramente por debajo de la mitad de la pantalla
-                    const y = canvas.height * 0.5 + (Math.random() - 0.5) * canvas.height * 0.1;
+                    // Iniciar las partículas en el centro superior (donde iría la aurora)
+                    const y = canvas.height * 0.3 + (Math.random() - 0.5) * canvas.height * 0.1;
                     const color = colors[Math.floor(Math.random() * colors.length)];
                     particles.push(new Particle(x, y, color));
                 }
@@ -217,13 +214,13 @@
             function animate() {
                 if (!isAnimating) return;
 
-                // 1. Limpiar el canvas y crear el efecto de "rastro" o neblina
-                // Dibujar un rectángulo semitransparente sobre lo dibujado, dejando un rastro sutil
-                ctx.fillStyle = 'rgba(5, 5, 26, 0.05)'; // Color de fondo muy transparente
+                // 1. LIMPIEZA EXTREMADAMENTE SUAVE (Crea un rastro muy denso)
+                // Usamos un valor de opacidad muy bajo (0.005) para que el rastro dure mucho
+                ctx.fillStyle = 'rgba(5, 5, 26, 0.005)'; 
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 // 2. Actualizar las partículas
-                time += 0.01; // Incrementa el tiempo para que la onda se mueva
+                time += 0.03; 
                 particles.forEach(p => p.update());
 
                 requestAnimationFrame(animate);
@@ -239,10 +236,10 @@
                 trigger.classList.add('clicked');
                 
                 // 3. INICIAR LA AURORA
-                initParticles(); // Inicializar las partículas
+                initParticles(); 
                 isAnimating = true;
-                animate(); // Iniciar el bucle de animación
-                canvas.classList.add('active'); // Mostrar el canvas
+                animate(); 
+                canvas.classList.add('active'); 
 
                 // 4. Mostrar mensaje 
                 setTimeout(() => {
@@ -256,7 +253,7 @@
             }
 
             trigger.addEventListener('click', startAurora);
-            initParticles(); // Inicializa las partículas fuera de la pantalla antes de empezar
+            initParticles(); 
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora de Tres Meses</title>
+    <title>Aurora de Tres Meses: Un Puente de Luz</title>
     
     <style>
         /* ESTILOS CSS */
@@ -42,49 +42,22 @@
             z-index: 10;
         }
 
-        /* --- LA AURORA: ELEMENTO GIGANTE Y DIFUSO --- */
-        #aurora-layer {
+        /* --- ELEMENTO CANVAS PARA LA AURORA --- */
+        #aurora-canvas {
             position: absolute;
             top: 0; 
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; 
             z-index: 5; 
-            opacity: 0;
-            transition: opacity 3s ease;
-            
-            /* El elemento de la aurora en sí mismo, colocado para cubrir el cielo */
-            background: radial-gradient(
-                circle at 50% 100%, /* Origen en el centro inferior del elemento */
-                rgba(79, 195, 247, 0.5) 0%, 
-                rgba(127, 255, 212, 0.3) 15%, 
-                transparent 30%
-            );
-            
-            /* Hacemos el degradado más grande y forzamos el desenfoque */
-            background-size: 250% 150%; 
-            filter: blur(100px); /* Desenfoque extremo para la apariencia de luz */
-            
-            /* El elemento empieza fuera de la vista para luego moverse */
-            transform: translateY(100%); 
+            opacity: 0; /* Inicia invisible */
+            transition: opacity 2s ease;
         }
 
-        /* Animación activa */
-        #aurora-layer.active {
-            opacity: 1;
-            /* Subimos el elemento a la posición central superior (el cielo) */
-            transform: translateY(-50%); 
-            animation: aurora-wave 20s ease-in-out infinite alternate;
+        #aurora-canvas.active {
+            opacity: 1; 
         }
-
-        /* Movimiento lateral y ondulado */
-        @keyframes aurora-wave {
-            0% { background-position: 0% 100%; transform: rotate(0deg) translateY(-50%) scaleX(1); }
-            50% { background-position: 100% 50%; transform: rotate(2deg) translateY(-60%) scaleX(1.1); } 
-            100% { background-position: 0% 100%; transform: rotate(0deg) translateY(-50%) scaleX(1); }
-        }
-
+        
         /* El botón */
         #aurora-trigger {
             position: absolute;
@@ -120,7 +93,7 @@
             border-radius: 15px;
             text-align: center;
             opacity: 0; 
-            transition: opacity 1s ease; 
+            transition: opacity 1s ease 1s; 
             z-index: 40; 
             width: 80%;
             max-width: 500px;
@@ -137,7 +110,7 @@
 
 <body>
     
-    <div id="aurora-layer"></div>
+    <canvas id="aurora-canvas"></canvas>
 
     <h1>⭐ Presiona la Raíz de la Aurora ⭐</h1>
     
@@ -161,32 +134,129 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             const trigger = document.getElementById('aurora-trigger');
-            const auroraLayer = document.getElementById('aurora-layer');
             const messageBox = document.getElementById('message-box');
             const musicPlayer = document.getElementById('music-player');
+            const canvas = document.getElementById('aurora-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let isAnimating = false;
+            let time = 0;
 
-            function startExperience() {
-                // 1. Reproducir música
-                musicPlayer.play().catch(e => console.log("Audio play failed:", e));
+            // Ajustar el tamaño del canvas al tamaño de la ventana
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
 
+            // Constructor de Partículas
+            class Particle {
+                constructor(x, y, color) {
+                    this.initialX = x;
+                    this.y = y;
+                    this.color = color;
+                    this.radius = Math.random() * 0.8 + 0.5; // Tamaño pequeño
+                    this.speed = Math.random() * 0.05 + 0.01; // Velocidad de movimiento
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+
+                update() {
+                    // Mover la partícula lentamente hacia la izquierda (efecto de flujo)
+                    this.x -= this.speed;
+
+                    // Si la partícula sale del límite izquierdo, reaparece por la derecha
+                    if (this.x < 0) {
+                        this.x = canvas.width;
+                    }
+
+                    // Calcular la posición vertical (Y) con una función de onda (Seno)
+                    // La amplitud define la altura de la aurora
+                    const waveHeight = canvas.height * 0.25; 
+                    // La frecuencia hace la forma de onda
+                    const waveFrequency = 0.005; 
+                    
+                    // La posición Y se calcula añadiendo una onda senoidal al Y inicial (horizontal)
+                    this.y = this.initialY + Math.sin(this.x * waveFrequency + time) * waveHeight;
+                    
+                    // Asegurarse de que la partícula no esté demasiado abajo (corta la onda)
+                    if (this.y > canvas.height * 0.95) {
+                        this.y = canvas.height * 0.95;
+                    }
+
+                    this.draw();
+                }
+            }
+
+            // Inicializar las partículas en forma de onda sutil
+            function initParticles() {
+                const particleCount = 2000;
+                const colors = [
+                    'rgba(79, 195, 247, 0.7)',  // Azul Claro
+                    'rgba(127, 255, 212, 0.7)', // Aqua
+                    'rgba(168, 223, 255, 0.7)'  // Blanco Azulado
+                ];
+                
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    const x = Math.random() * canvas.width;
+                    // Iniciar las partículas ligeramente por debajo de la mitad de la pantalla
+                    const y = canvas.height * 0.5 + (Math.random() - 0.5) * canvas.height * 0.1;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            // Bucle principal de animación (Game Loop)
+            function animate() {
+                if (!isAnimating) return;
+
+                // 1. Limpiar el canvas y crear el efecto de "rastro" o neblina
+                // Dibujar un rectángulo semitransparente sobre lo dibujado, dejando un rastro sutil
+                ctx.fillStyle = 'rgba(5, 5, 26, 0.05)'; // Color de fondo muy transparente
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 2. Actualizar las partículas
+                time += 0.01; // Incrementa el tiempo para que la onda se mueva
+                particles.forEach(p => p.update());
+
+                requestAnimationFrame(animate);
+            }
+
+
+            // --- CONTROL DE INICIO ---
+            function startAurora() {
+                // 1. Música
+                musicPlayer.play().catch(e => console.error("Fallo al iniciar el audio:", e));
+                
                 // 2. Animar botón 
                 trigger.classList.add('clicked');
                 
-                // 3. Mostrar la Aurora
-                auroraLayer.classList.add('active');
+                // 3. INICIAR LA AURORA
+                initParticles(); // Inicializar las partículas
+                isAnimating = true;
+                animate(); // Iniciar el bucle de animación
+                canvas.classList.add('active'); // Mostrar el canvas
 
                 // 4. Mostrar mensaje 
                 setTimeout(() => {
                     messageBox.classList.add('active');
                 }, 1500);
 
-                // 5. Eliminar el botón
+                // 5. Limpiar
                 setTimeout(() => {
                     trigger.style.display = 'none';
                 }, 500);
             }
 
-            trigger.addEventListener('click', startExperience);
+            trigger.addEventListener('click', startAurora);
+            initParticles(); // Inicializa las partículas fuera de la pantalla antes de empezar
         });
     </script>
 </body>

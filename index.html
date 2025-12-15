@@ -10,7 +10,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #05051a; 
+            background-color: #05051a; /* Fondo de Noche Estelar */
             color: #ffffff;
             overflow: hidden; 
             display: flex;
@@ -80,48 +80,52 @@
             opacity: 1;
         }
         
-        /* --- NUEVA AURORA (BOX-SHADOW APILADO) --- */
+        /* --- AURORA ANIMADA POR TEXTURA DE FONDO (Background Position) --- */
         #aurora-effect {
             position: absolute;
             right: 0; 
-            bottom: 0; 
-            width: 100%; 
+            top: 0; /* Cubrimos toda el área visible */
+            width: 100%;
             height: 100%;
             opacity: 0; 
             z-index: 8;
             transition: opacity 2s ease;
             
-            /* El elemento base es un punto muy pequeño a la derecha */
-            width: 10px;
-            height: 10px;
-            background-color: transparent; /* No queremos fondo sólido */
-            border-radius: 50%;
-
-            /* Creación de múltiples puntos y filamentos con box-shadow */
-            box-shadow: 
-                /* Capa 1: Base Azul */
-                -50px 0 100px 80px rgba(0, 150, 255, 0.6),
-                -150px 50px 150px 100px rgba(0, 200, 255, 0.5),
-                /* Capa 2: Aqua */
-                -250px 0 100px 50px rgba(127, 255, 212, 0.7),
-                -350px -50px 120px 70px rgba(127, 255, 212, 0.6);
-
-            /* Aplica desenfoque al contenedor para el efecto de rastro */
-            filter: blur(1px); 
+            /* Degradado base (simulando la textura de partículas onduladas) */
+            background: 
+                radial-gradient(circle at 100% 50%, 
+                    rgba(79, 195, 247, 0.9) 0%, /* Azul claro (origen) */
+                    transparent 10%
+                ),
+                repeating-linear-gradient(
+                    150deg, /* Ángulo para simular la curva */
+                    rgba(127, 255, 212, 0.5), /* Aqua */
+                    rgba(79, 195, 247, 0.5) 10%, /* Azul */
+                    rgba(168, 223, 255, 0.5) 20% /* Blanco Azulado */
+                );
+            
+            /* Ajuste de tamaño para el efecto de movimiento */
+            background-size: 600% 400%; 
+            filter: blur(2px) contrast(150%); /* Hace la textura de partículas más intensa */
 
             /* Clase para iniciar la animación */
             &.active {
                 opacity: 1;
-                /* Animación de movimiento horizontal y de forma (la onda) */
-                animation: aurora-wave 10s ease-in-out infinite alternate;
+                /* Animación de movimiento continuo del fondo */
+                animation: aurora-flow 25s linear infinite; 
             }
         }
         
-        /* Animación: Movimiento de Onda Suave (transforma todo el grupo de sombras) */
-        @keyframes aurora-wave {
-            0% { transform: translateX(0) scaleY(1) rotate(0deg); }
-            50% { transform: translateX(-30vw) scaleY(1.2) rotate(2deg); } /* Onda hacia la izquierda y más alta */
-            100% { transform: translateX(0) scaleY(1) rotate(0deg); }
+        /* Animación: Simulación de flujo constante de partículas */
+        @keyframes aurora-flow {
+            0% { 
+                /* Mueve el fondo desde la derecha hacia la izquierda */
+                background-position: 100% 50%; 
+            }
+            100% { 
+                /* Continúa el movimiento hacia la izquierda con ligera variación vertical (onda) */
+                background-position: 0% 40%; 
+            }
         }
         
         /* Clases de control JS */
@@ -175,7 +179,7 @@
                 // 2. Ocultar el botón
                 trigger.classList.add('hidden');
 
-                // 3. INICIAR LA AURORA (Clase 'active')
+                // 3. INICIAR LA AURORA
                 auroraEffect.classList.add('active');
 
                 // 4. MOSTRAR EL MENSAJE (con retraso)

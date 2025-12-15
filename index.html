@@ -28,7 +28,7 @@
             z-index: 20; 
             font-size: 2.5em;
             position: relative;
-            text-align: center; /* Asegura que el título se centre bien en móvil */
+            text-align: center; 
         }
 
         .aurora-container {
@@ -59,14 +59,14 @@
             opacity: 1; 
         }
         
-        /* El botón: OPTIMIZACIÓN MÓVIL */
+        /* El botón: FIX Z-INDEX y TAMAÑO */
         #aurora-trigger {
             position: absolute;
-            right: 50%; /* Centrado horizontal */
-            bottom: 30%; /* Ligeramente más abajo */
-            transform: translateX(50%); /* Ajuste final de centrado */
+            right: 50%; 
+            bottom: 30%; 
+            transform: translateX(50%); 
             background-color: #4fc3f7; 
-            width: 60px; /* Un poco más grande para el dedo */
+            width: 60px; 
             height: 60px; 
             border-radius: 50%;
             cursor: pointer;
@@ -75,35 +75,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 30; 
+            z-index: 50; /* <--- ¡ESTE ES EL CAMBIO CLAVE! MÁXIMA PRIORIDAD */
         }
         
         #aurora-trigger.clicked {
-            transform: scale(2) translateX(50%); /* Mantiene el centrado al escalar */
+            transform: scale(2) translateX(50%); 
             opacity: 0;
         }
 
-        /* Mensaje: Aseguramos que sea responsivo */
+        /* Mensaje */
         #message-box {
             position: absolute;
             top: 15%; 
             left: 50%;
             transform: translateX(-50%);
-            padding: 30px 15px; /* Más padding vertical, menos horizontal en móviles */
-            background: rgba(0, 0, 0, 0.7); /* Ligeramente más opaco para asegurar lectura */
+            padding: 30px 15px; 
+            background: rgba(0, 0, 0, 0.7); 
             border: 2px solid #7fffd4;
             border-radius: 15px;
             text-align: center;
             opacity: 0; 
             transition: opacity 1s ease 1s; 
             z-index: 40; 
-            width: 90%; /* Ocupa más ancho en móvil */
+            width: 90%; 
             max-width: 500px;
             box-shadow: 0 0 20px rgba(127, 255, 212, 0.3);
         }
         
         #message-box p {
-            font-size: 1em; /* Fuente ligeramente más pequeña en móvil */
+            font-size: 1em; 
         }
         
         #message-box.active {
@@ -209,7 +209,6 @@
                 particles = [];
                 for (let i = 0; i < particleCount; i++) {
                     const x = Math.random() * canvas.width;
-                    // POSICIÓN DE LA AURORA OPTIMIZADA PARA MÓVIL
                     const y = canvas.height * 0.4 + (Math.random() - 0.5) * canvas.height * 0.1; 
                     const color = colors[Math.floor(Math.random() * colors.length)];
                     particles.push(new Particle(x, y, color));
@@ -234,7 +233,7 @@
 
             // --- CONTROL DE INICIO ---
             function startAurora() {
-                // 1. Música
+                // 1. Música (El navegador lo permite solo después de un toque de usuario)
                 musicPlayer.play().catch(e => console.error("Fallo al iniciar el audio:", e));
                 
                 // 2. Animar botón 
@@ -257,7 +256,9 @@
                 }, 500);
             }
 
+            // Usamos 'click' (funciona para mouse y touch)
             trigger.addEventListener('click', startAurora);
+            
             initParticles(); 
         });
     </script>
